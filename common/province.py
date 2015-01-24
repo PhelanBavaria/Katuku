@@ -4,29 +4,24 @@ from common import util
 
 
 class Province:
-    def __init__(self, campaign, color):
+    def __init__(self, campaign):
         self.campaign = campaign
-        self.color = color
-        self.controller = None
-        self.pixels = []
-        self.border = []
+        self.controller = ''
+        self.inner = []
         self.neighbours = set()
-        self.center = (0, 0)
         self.unit_amount = 0
+        self.passable = True
+        self.water = False
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
-        if name == 'border':
-            if not self.border:
-                self.center = value
-                return
-            x, y = 0, 0
-            for coord in self.border:
-                x += coord[0]
-                y += coord[1]
-            x /= len(self.border)
-            y /= len(self.border)
-            self.center = (x, y)
+        if name == 'color':
+            self.passable = True
+            self.water = False
+            if all([c <= 90 for c in value]):
+                self.passable = False
+            elif value[2] == 255:
+                self.water = True
 
     def battle(self, attacker, unit_amount):
         self.campaign.add_histor('battle', {
@@ -38,3 +33,12 @@ class Province:
             self.unit_amount = unit_amount
             self.controller = attacker
             attacker.provinces.append(self)
+
+    def endangered(self):
+        level = 0
+        for province in self.neighbours:
+            province = self.game.campaign.provinces[province]
+            if province.controller == self.controller:
+                continue
+            level += province.unit_amount
+        return round(level / self.unit_amount)

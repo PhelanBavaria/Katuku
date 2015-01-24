@@ -1,0 +1,8 @@
+auto_unit_placement: False
+simultanious_turns: False
+new_units_per_turn: 33          # %, provinces / 3
+auto_turn: False        # True, False
+max_dice_attack: 3
+max_dice_defence: 4
+max_units_province: None
+move_units_on_win: choice

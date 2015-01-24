@@ -1,10 +1,12 @@
 
 
 import os
+import random
 from time import time
 from pygame import image
 from common import util
 from common import Province
+from common import Trigger
 
 
 class Campaign:
@@ -13,31 +15,56 @@ class Campaign:
         self.paused = False
         self.history = {}
         self.current_player = 0
-        self.turn = 0
+        self.turn = []
+        self.unready_players = []
         self.map_name = ''
         self.players = setup['players']
-        self.prov_map = None
+        self.gamerules = setup['rules']
         self.provinces = {}
-        self.selected_province = ''
-        self.origin_province = ''
-        self.goal_province = ''
-        self.load_map(setup['map'])
-        for player in self.players:
-            player.units_to_place = setup['start_units']
+        self.triggers = {
+            'select_province': Trigger()
+        }
+        self.set_up()
         print('Turn:', self.players[self.current_player].name)
 
+    def set_up(self):
+        self.load_map(self.setup['map'])
+        if self.gamerules['auto_unit_placement']:
+            unassigned = list(self.provinces.keys())
+            pt = len(self.provinces)
+            su = self.gamerules['start_units']
+            for player in self.players:
+                for i in range(int(pt*su)):
+                    if unassigned:
+                        choice = random.choice(unassigned)
+                        unassigned.remove(choice)
+                        player.provinces.append(choice)
+                        self.provinces[choice].controller = player.name
+                    else:
+                        choice = random.choice(player.provinces)
+                    self.provinces[choice].unit_amount += 1
+        self.unready_players = self.players
+
     def update(self):
-        player = self.players[self.current_player]
-        player.update()
+        for player in self.unready_players[:]:
+            if not player.ready:
+                action = player.update()
+                self.turn.append(action)
+                if not self.gamerules['simultanious_turns']:
+                    break
+            else:
+                if not self.gamerules['simultanious_turns']:
+                    self.end_turn()
+                self.unready_players.remove(player)
+        if not self.unready_players:
+            if self.gamerules['simultanious_turns']:
+                self.end_turn()
+            [player.ready = False for player in self.players]
+            self.unready_players = self.players
 
     def end_turn(self):
-        self.selected_province = ''
-        self.origin_province = ''
-        self.goal_province = ''
-        self.current_player += 1
-        self.current_player %= len(self.players)
-        if not self.current_player:
-            self.turn += 1
+        for action in self.turn:
+            self.actions[action[0]](action[1:])
         print('Turn:', self.players[self.current_player].name)
 
     def add_history(self, action, info):
@@ -49,32 +76,34 @@ class Campaign:
 
     def load_map(self, name):
         print('Loading map:', name + '.bmp')
-        start_time = time()
         self.map_name = name
         surface = image.load(os.path.join('content', 'maps', name + '.bmp'))
         width, height = surface.get_width(), surface.get_height()
-        px_count = width*height
-        progress = 0
         for y in range(height):
+            last_color = None
             for x in range(width):
-                new_progress = int((width*y+x+1)/px_count*100)
-                if new_progress != progress and not new_progress % 10:
-                    progress = new_progress
-                    print('Progress:', str(progress) + '%')
-                color = surface.get_at((x, y))
-                color = '#%02x%02x%02x' % color[0:3]
+                color = tuple(surface.get_at((x, y)))
                 if color not in self.provinces.keys():
-                    self.provinces[color] = Province(self, color)
-                self.provinces[color].pixels.append((x, y))
-                for adjacent in util.adjacent((x, y)):
-                    try:
-                        adj_color = surface.get_at(adjacent)
-                    except IndexError:
-                        self.provinces[color].border.append((x, y))
-                        continue
-                    adj_color = '#%02x%02x%02x' % adj_color[0:3]
-                    if adj_color != color:
-                        self.provinces[color].border.append((x, y))
-                        self.provinces[color].neighbours.add(adj_color)
-        self.prov_map = surface
-        print('Completion time:', time() - start_time)
+                    self.provinces[color] = Province(self)
+                    if all([c <= 90 for c in value]):
+                        self.provinces[color].passable = False
+                    elif value[2] == 255:
+                        self.provinces[color].water = True
+                if not last_color:
+                    last_color = color
+                    continue
+                if last_color != color:
+                    self.provinces[color].neighbours.add(last_color)
+                    self.provinces[last_color].neighbours.add(color)
+                    last_color = color
+        for x in range(width):
+            last_color = None
+            for y in range(height):
+                color = tuple(surface.get_at((x, y)))
+                if not last_color:
+                    last_color = color
+                    continue
+                if last_color != color:
+                    self.provinces[color].neighbours.add(last_color)
+                    self.provinces[last_color].neighbours.add(color)
+                    last_color = color

@@ -1,22 +1,41 @@
-
+    
 
 import pygame
 from interfaces import Base
 
 
 class Player(Base):
-    def __init__(self, name, color, game):
+    def __init__(self, name, game):
         Base.__init__(self, game)
         self.name = name
-        self.color = color
+        self.ready = False
         self.units_to_place = 0
         self.provinces = []
+        self.origin_province = ()
+        self.goal_province = ()
+        game.campaign.triggers['select_province'].listen(self.on_province_selection)
+
+    def on_province_selection(self, *args):
+        province = args[0]
+        if province in self.provinces:
+            self.origin_province = province
+        elif self.origin_province:
+            origin_province = self.game.campaign.provinces[self.origin_province]
+            if province in origin_province.neighbours:
+                self.goal_province = province
+
+    def bordering_provinces(self):
+        for province in self.provinces:
+            for neighbour in province.neighbours:
+                if neighbour not in self.provinces:
+                    yield neighbour
 
     def update(self):
         campaign = self.game.campaign
-        selected_province = campaign.selected_province
 
-        if not selected_province:
+        if not self.origin_province:
+            return
+        elif not self.goal_province:
             return
 
         if self.units_to_place:

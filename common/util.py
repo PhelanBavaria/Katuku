@@ -38,7 +38,7 @@ def closest(origin, comparisons):
     for comp in comparisons[1:]:
         cl = distance(origin, c)
         compl = distance(origin, comp)
-        if cl < compl and compl != 0:
+        if cl > compl and compl != 0:
             c = comp
     return c
 
@@ -93,6 +93,8 @@ if __name__ == '__main__':
     # print(distance((1, 1), (1, 7)))
     # print(adjacent((5, 5)))
     # print(rand_id())
-    points = [(random.randint(0, 100), random.randint(0, 100)) for i in range(10)]
-    print(points)
-    print(convex_hull(points))
+    # points = [(random.randint(0, 100), random.randint(0, 100)) for i in range(10)]
+    # print(points)
+    # print(convex_hull(points))
+    print(distance((799, 600), (768, 600)))
+    print(distance((799, 600), (799, 601)))

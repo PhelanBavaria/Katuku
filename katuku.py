@@ -1,5 +1,6 @@
 
 
+import yaml
 import pygame
 from common import Game
 from interfaces import GUI
@@ -14,19 +15,20 @@ from interfaces import AI
 pygame.init()
 
 game = Game()
-gui = GUI(game)
-gui.pages['page_campaign'] = PageCampaign(gui)
-game.local_interface = gui
+game.local_interface = CommandLine(game)
+# gui = GUI(game)
+# gui.pages['page_campaign'] = PageCampaign(gui)
+# game.local_interface = gui
 
 # Test:
 players = [
-    Player('test_human', (0, 0, 255), game),
-    AI('test_ai', (255, 0, 0), game)
+    Player('test_human', game),
+    AI('test_ai', game)
 ]
+rules = yaml.load(open('content/gamerules/dicewars.yml').read())
 setup = {
-    'map': 'test',
-    'start_units': 4,
-    'remaining_provinces_filled_by': 'independent',
+    'map': 'Europe',
+    'rules': rules
     'players': players
 }
 game.campaign = Campaign(setup)

@@ -9,19 +9,17 @@ class GameMap(Widget):
     def __init__(self, surface, x, y, width, height, game):
         Widget.__init__(self, surface, x, y, width, height)
         self.game = game
+        self.overlay = 'political'
         self.overlays = {
-            'faction_overlay': [
-                self.faction_overlay(),
-                self.unit_overlay()
-            ]
-        self.current_overlay = 'faction_overlay'
+            'political': self.draw_political
+        }
+        self.current_overlay = 'political'
         self.last_draw = round(time(), 2)
         self.last_turn = 0
 
     def on_click(self):
         pos = pygame.mouse.get_pos()
         color = self.game.campaign.prov_map.get_at(pos)
-        color = '#%02x%02x%02x' % color[0:3]
         print('Clicked on province', color)
         self.game.campaign.selected_province = color
 
@@ -29,51 +27,27 @@ class GameMap(Widget):
         Widget.draw(self)
         if time() - self.last_draw < 1.0:
             return
-        
         self.last_draw = time()
-        if campaign.turn > self.last_turn:
-            for t in range(self.last_turn+1, campaign.turn+1):
-                history = campaign.history[t]
-                try:
-                    battles = history['battle']
-                except KeyError:
-                    continue
-                for battle in battles:
-                    province = campaign.provinces[battle['province']]
-                    overlay = self.overlays['faction_overlay']
-                    p_color = province.controller.color
-                    r, g, b = p_color
-                    b_color = 255-r, 255-g, 255-b
-                    overlay.add_layer(province.pixels, p_color)
-                    overlay.add_layer(province.border, b_color)
-            self.last_turn = campaign.turn
-        #self.surface.blit(self.game.campaign.prov_map, (self.x, self.y))
-        # for _id, province in self.game.campaign.provinces.items():
-        #     if _id not in self.provinces:
-        #         self.provinces[_id] = [
-        #             self.player_color_overlay(province),
-        #             self.border_overlay(province),
-        #             self.unit_overlay(province)
-        #         ]
-        #     for overlay in self.provinces[_id]:
-        #         for coord, color in overlay.items():
-        #             rect = pygame.Rect(coord, (1, 1))
-        #             self.surface.fill(color, rect)
-        # province_id = self.game.campaign.origin_province
-        # if province_id:
-        #     self.origin_overlay(province_id)
-        # province_id = self.game.campaign.goal_province
-        # if province_id:
-        #     self.goal_overlay(province_id)
 
-    def player_color_overlay(self, province):
-        for pixel in province.pixels:
-            try:
-                color = province.controller.color
-            except AttributeError:
-                color = (200, 200, 200)
-            overlay[pixel] = color
-        return overlay   
+        if self.overlay:
+            self.overlays[self.overlay]()
+
+    def draw_political(self):
+        for province in self.game.campaign.provinces.values():
+            if not province.passable:
+                pcolor = (90, 90, 90)
+                bcolor = (90, 90, 90)
+            elif province.water:
+                pcolor = (64, 64, 157)
+                bcolor = (64, 64, 157)
+            elif not province.controller:
+                pcolor = (160, 160, 160)
+                bcolor = (160, 160, 160)
+            else:
+                pcolor = province.controller.color
+                bcolor = (255-v for v in pcolor)
+            pygame.draw.polygon(self.surface, pcolor, province.border)
+            pygame.draw.polygon(self.surface, bcolor, province.border, 1) 
 
     def border_overlay(self, province):
         overlay = {}

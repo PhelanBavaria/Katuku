@@ -44,7 +44,7 @@ class GUI(Base):
         else:
             print('Page "' + self.current_page + '" not existent!')
         pygame.display.flip()
-        #self.console.update()
+        self.console.update()
 
     def exit(self):
         self.game.run = False
