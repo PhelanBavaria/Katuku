@@ -2,7 +2,6 @@
 
 import os
 import random
-from time import time
 from pygame import image
 from common import util
 from common import Province
@@ -75,27 +74,29 @@ class Campaign:
         self.history[self.turn][action].append(info)
 
     def load_map(self, name):
-        print('Loading map:', name + '.bmp')
+        file_name = name + '.bmp'
+        print('Loading map:', file_name)
         self.map_name = name
-        surface = image.load(os.path.join('content', 'maps', name + '.bmp'))
+        surface = image.load(os.path.join('content', 'maps', file_name))
         width, height = surface.get_width(), surface.get_height()
+        # Scanning the map from left to right, top to bottom first
         for y in range(height):
             last_color = None
             for x in range(width):
-                color = tuple(surface.get_at((x, y)))
+                color = tuple(surface.get_at((x, y)))  # color in RGBA
                 if color not in self.provinces.keys():
                     self.provinces[color] = Province(self)
-                    if all([c <= 90 for c in value]):
+                    if all([v <= 90 for v in color[:3]]):  # if color is grayish
                         self.provinces[color].passable = False
-                    elif value[2] == 255:
+                    elif color[2] == 255:
                         self.provinces[color].water = True
                 if not last_color:
                     last_color = color
-                    continue
-                if last_color != color:
+                elif last_color != color:
                     self.provinces[color].neighbours.add(last_color)
                     self.provinces[last_color].neighbours.add(color)
                     last_color = color
+        # Scanning the map from top to bottom, left to right
         for x in range(width):
             last_color = None
             for y in range(height):
@@ -107,3 +108,5 @@ class Campaign:
                     self.provinces[color].neighbours.add(last_color)
                     self.provinces[last_color].neighbours.add(color)
                     last_color = color
+
+        # Note: Scanning twice to get directly adjacent pixels
