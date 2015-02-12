@@ -4,74 +4,52 @@ import os
 import random
 from pygame import image
 from common import util
+from common import actions
 from common import Province
-from common import Trigger
 
 
 class Campaign:
     def __init__(self, setup):
         self.setup = setup
         self.paused = False
-        self.history = {}
         self.current_player = 0
-        self.turn = []
-        self.unready_players = []
         self.map_name = ''
         self.players = setup['players']
         self.gamerules = setup['rules']
         self.provinces = {}
-        self.triggers = {
-            'select_province': Trigger()
-        }
-        self.set_up()
-        print('Turn:', self.players[self.current_player].name)
 
-    def set_up(self):
+    def create(self):
         self.load_map(self.setup['map'])
+        for player in self.players:
+            receive = actions.ReceiveUnits(self, player)
+            units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
+            receive.extra(units)
+            receive()
         if self.gamerules['auto_unit_placement']:
-            unassigned = list(self.provinces.keys())
-            pt = len(self.provinces)
-            su = self.gamerules['start_units']
-            for player in self.players:
-                for i in range(int(pt*su)):
-                    if unassigned:
-                        choice = random.choice(unassigned)
-                        unassigned.remove(choice)
-                        player.provinces.append(choice)
-                        self.provinces[choice].controller = player.name
+            unassigned = [c for c, p in self.provinces.items() if
+                            p.passable and not p.water]
+            placing_players = self.players[:]
+            while placing_players:
+                for player in placing_players:
+                    if player.units_to_place:
+                        player.place_unit()()
                     else:
-                        choice = random.choice(player.provinces)
-                    self.provinces[choice].unit_amount += 1
-        self.unready_players = self.players
+                        placing_players.remove(player)
 
     def update(self):
-        for player in self.unready_players[:]:
-            if not player.ready:
-                action = player.update()
-                self.turn.append(action)
-                if not self.gamerules['simultanious_turns']:
-                    break
-            else:
-                if not self.gamerules['simultanious_turns']:
-                    self.end_turn()
-                self.unready_players.remove(player)
-        if not self.unready_players:
-            if self.gamerules['simultanious_turns']:
-                self.end_turn()
-            [player.ready = False for player in self.players]
-            self.unready_players = self.players
-
-    def end_turn(self):
-        for action in self.turn:
-            self.actions[action[0]](action[1:])
-        print('Turn:', self.players[self.current_player].name)
-
-    def add_history(self, action, info):
-        if self.turn not in self.history.keys():
-            self.history[self.turn] = {}
-        if action not in self.history[self.turn].keys():
-            self.history[self.turn][action] = []
-        self.history[self.turn][action].append(info)
+        if self.current_player == len(self.players):
+            self.current_player = 0
+            for player in self.players:
+                player.ready = False
+            print('End Turn')
+        elif self.players[self.current_player].ready:
+            actions.ReceiveUnits(self, self.players[self.current_player])()
+            print('Player', self.players[self.current_player].name, 'ready')
+            self.current_player += 1
+        else:
+            decision = self.players[self.current_player].make_decision()
+            if decision:
+                decision()
 
     def load_map(self, name):
         file_name = name + '.bmp'
@@ -85,7 +63,7 @@ class Campaign:
             for x in range(width):
                 color = tuple(surface.get_at((x, y)))  # color in RGBA
                 if color not in self.provinces.keys():
-                    self.provinces[color] = Province(self)
+                    self.provinces[color] = Province(color, self)
                     if all([v <= 90 for v in color[:3]]):  # if color is grayish
                         self.provinces[color].passable = False
                     elif color[2] == 255:

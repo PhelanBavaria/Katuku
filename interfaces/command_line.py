@@ -1,6 +1,7 @@
 
 
 from interfaces import Base
+from interfaces import Tracer
 from interfaces import Player
 from interfaces import AI
 
@@ -12,9 +13,11 @@ class CommandLine(Base):
     def __init__(self, game):
         Base.__init__(self, game)
         self.actions = {
+            '': self._pass,
             'exit': self.exit,
             'exec': self._exec
         }
+        tracer = Tracer(game)
 
     def update(self):
         if self.counter:
@@ -28,6 +31,9 @@ class CommandLine(Base):
                 print('Action not supported')
                 return
             action()
+
+    def _pass(self):
+        return
 
     def _exec(self):
         if self.game.config['exec']:

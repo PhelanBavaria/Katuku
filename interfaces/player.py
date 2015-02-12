@@ -1,7 +1,8 @@
-    
+
 
 import pygame
 from interfaces import Base
+from common import actions
 
 
 class Player(Base):
@@ -13,7 +14,7 @@ class Player(Base):
         self.provinces = []
         self.origin_province = ()
         self.goal_province = ()
-        game.campaign.triggers['select_province'].listen(self.on_province_selection)
+        actions.SelectProvince.subscribers.append(self.on_province_selection)
 
     def on_province_selection(self, *args):
         province = args[0]

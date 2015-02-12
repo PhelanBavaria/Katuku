@@ -3,35 +3,75 @@
 import random
 from common import util
 from interfaces import Player
+from common import actions
 
 
 class AI(Player):
     def on_province_selection(self):
         pass
 
-    def update(self):
+    def make_decision(self):
         if self.units_to_place:
             return self.place_unit()
         else:
             return self.attack()
 
     def attack(self):
-        province = random.choice(self.border())
-        enemies = [e for e in province.neighbours if e.controller != province.controller]
-        enemy = random.choice(enemies)
-        return ('attack', enemy, province, province.unit_amount-1)
+        ps = self.game.campaign.provinces
+        battles = self.possible_battles()
+        if not battles:
+            self.ready = True
+            return
+        battle = random.choice(battles)
+        province = battle[1]
+        enemy_prov = battle[2]
+        return actions.Attack(self.game.campaign, enemy_prov, province,
+                              province.unit_amount-1)
 
     def place_unit(self):
-        provinces = self.game.campaign.provinces
-        unoccupied = [i for i, p in provinces if not p.controller]
+        provinces = list(self.game.campaign.provinces.values())
+        unoccupied = [p for p in provinces if p.occupiable(self)]
         if unoccupied:
-            province = random.chaice(unoccupied)
+            province = random.choice(unoccupied)
         else:
             province = random.choice(self.provinces)
-        return ('place_unit', province, self)
+            province = self.game.campaign.provinces[province]
+        return actions.PlaceUnit(self.game.campaign, province, self)
+
+    def possible_battles(self):
+        ps = self.game.campaign.provinces
+        battles = []
+        for p in self.provinces:
+            if ps[p].unit_amount < 2:
+                continue
+            for n in ps[p].neighbours:
+                if ps[n].controller == ps[p].controller:
+                    continue
+                elif not ps[n].passable:
+                    continue
+                elif ps[n].water:
+                    continue
+                ap = ps[p].unit_amount-1
+                dp = ps[n].unit_amount
+                sr = ap - dp
+                battles.append((sr, ps[p], ps[n]))
+        #battles.sort()
+        return battles
+
+    def neighbours(self):
+        ps = self.game.campaign.provinces
+        result = set()
+        for p in self.provinces:
+            for n in ps[p].neighbours:
+                if ps[n].occupiable:
+                    result.add(n)
+        return result
 
     def border(self):
-        return [p for p in self.provinces if [e for e in p.neighbours if e.controller != p.controller]]
+        ps = self.game.campaign.provinces
+        return [p for p in self.provinces if
+            [e for e in ps[p].neighbours if
+                ps[e].occupiable(self)]]
 
     def most_endangered_province(self):
         most_endangered = None
