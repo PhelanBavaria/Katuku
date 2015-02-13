@@ -31,7 +31,6 @@ class Province:
             if self.controller:
                 self.controller.provinces.remove(self.color)
             value.provinces.append(self.color)
-        if self.color == (48, 118, 56, 255) and name == 'unit_amount':
         object.__setattr__(self, name, value)
 
     def endangered(self):

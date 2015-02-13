@@ -7,7 +7,7 @@ from common import actions
 
 
 class AI(Player):
-    def on_province_selection(self):
+    def on_province_selection(self, action):
         pass
 
     def make_decision(self):

@@ -16,7 +16,7 @@ class Player(Base):
         self.goal_province = ()
         actions.SelectProvince.subscribers.append(self.on_province_selection)
 
-    def on_province_selection(self, *args):
+    def on_province_selection(self, action):
         province = args[0]
         if province in self.provinces:
             self.origin_province = province

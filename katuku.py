@@ -18,8 +18,8 @@ random.seed(222)
 pygame.init()
 
 game = Game()
-game.local_interface = Tracer(game)
-# game.local_interface = CommandLine(game)
+# game.local_interface = Tracer(game)
+game.local_interface = CommandLine(game)
 # gui = GUI(game)
 # gui.pages['page_campaign'] = PageCampaign(gui)
 # game.local_interface = gui
