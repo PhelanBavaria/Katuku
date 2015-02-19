@@ -8,7 +8,6 @@ from interfaces import GUI
 from interfaces import CommandLine
 from interfaces import Tracer
 from common import Campaign
-from content.pages import Campaign as PageCampaign
 from interfaces import Player
 from interfaces import AI
 
@@ -18,11 +17,6 @@ random.seed(222)
 pygame.init()
 
 game = Game()
-# game.local_interface = Tracer(game)
-game.local_interface = CommandLine(game)
-# gui = GUI(game)
-# gui.pages['page_campaign'] = PageCampaign(gui)
-# game.local_interface = gui
 
 # Test:
 players = [
@@ -38,6 +32,11 @@ setup = {
 game.campaign = Campaign(setup)
 game.campaign.create()
 #game.campaign.select_provinc'#00ff00')
+# game.local_interface = Tracer(game)
+# game.local_interface = CommandLine(game)
+game.local_interface = GUI(game)
+# gui.pages['page_campaign'] = PageCampaign(gui)
+# game.local_interface = gui
 
 
 while game.run:
@@ -46,7 +45,8 @@ while game.run:
     if len(remaining) == 1:
         print('Player', remaining[0].name, 'has won!')
         print('Occupied provinces:', len(remaining[0].provinces))
-        break
+        if input('Type anything to end'):
+            break
     elif game.campaign and not game.campaign.paused:
         game.campaign.update()
     #for player in players:

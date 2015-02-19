@@ -1,27 +1,34 @@
 
 
+from random import randint
 import pygame
 from interfaces import Base
-from interfaces import CommandLine
 from common.widgets import GameMap
 
 
 class GUI(Base):
     def __init__(self, game):
         Base.__init__(self, game)
-        self.console = CommandLine(game)
         self.screen = pygame.display.set_mode((800, 800))
         pygame.display.set_caption('Katuku')
-        pygame.display.flip()
 
-        self.pages = {}
-        self.current_page = ''
+        self.players = {}
+        for player in game.campaign.players:
+            pcolor = tuple(randint(0, 255) for i in range(4))
+            bcolor = tuple(randint(0, 255) for i in range(4))
+            self.players[player.name] = (pcolor, bcolor)
+        self.widgets = {
+            'campaignmap': GameMap((0, 0), (80, 80), game, self.players)
+        }
+        self.displayed = []
+        self.selected_widget = None
         self.interactions = {
             pygame.QUIT: self.exit,
             pygame.MOUSEBUTTONDOWN: self.select_widget,
             pygame.K_ESCAPE: self.exit,
-            pygame.K_RETURN: self.end_turn
+            pygame.K_RETURN: None
         }
+        pygame.display.flip()
 
     def update(self):
         for event in pygame.event.get():
@@ -37,28 +44,19 @@ class GUI(Base):
             except AttributeError:
                 continue
 
-        if self.game.campaign:
-            self.current_page = 'page_campaign'
-        if self.current_page in self.pages.keys():
-            self.pages[self.current_page].draw()
-        else:
-            print('Page "' + self.current_page + '" not existent!')
+        for widget in self.widgets.values():
+            widget.draw(self.screen)
         pygame.display.flip()
-        self.console.update()
 
     def exit(self):
         self.game.run = False
 
-    def end_turn(self):
-        self.game.campaign.end_turn()
-
     def select_widget(self):
-        page = self.pages[self.current_page]
         pos = pygame.mouse.get_pos()
-        for widget in page.widgets:
+        for widget in self.widgets:
             if widget.get_rect().collidepoint(*pos):
                 widget.on_click()
-                page.selected_widget = widget
+                self.selected_widget = widget
                 break
 
     def draw_game(self):

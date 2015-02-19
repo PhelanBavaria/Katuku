@@ -4,16 +4,12 @@ import pygame
 
 
 class Widget(pygame.Surface):
-    def __init__(self, surface, x, y, width, height):
-        pygame.Surface.__init__(self, (width, height))
-        self.surface = surface
-        self.x, self.y = x, y
-        self.subwidgets = []
+    def __init__(self, pos, size):
+        self.pos = pos
+        self.size = size
 
     def on_click(self):
         pass
 
-    def draw(self):
-        self.surface.blit(self, (self.x, self.y))
-        for widget in self.subwidgets:
-            widget.draw()
+    def draw(self, surface):
+        pass

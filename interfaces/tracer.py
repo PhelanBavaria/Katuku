@@ -33,7 +33,7 @@ class Tracer(Base):
         else:
             result = 'lost'
         print('Player', attacker,
-              'attacked', action.defender.unit_amount, 'units on',
+              'attacked', action.defender_unit_amount, 'units on',
               action.defender.color, '(' + str(defender) + ')',
               'from', action.attacker.color,
               'with', action.unit_amount, 'out of',

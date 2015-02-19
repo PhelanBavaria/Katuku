@@ -11,6 +11,7 @@ class Attack(Action):
         self.defender = defender
         self.attacker = attacker
         self.unit_amount = unit_amount
+        self.defender_unit_amount = defender.unit_amount
         self.attacker_dice = 0
         self.defender_dice = 0
         self.won = False
@@ -30,6 +31,6 @@ class Attack(Action):
                 Action.__call__(self)
                 return
         self.won = True
-        Action.__call__(self)
         self.defender.unit_amount = self.unit_amount
         self.defender.controller = self.attacker.controller
+        Action.__call__(self)
