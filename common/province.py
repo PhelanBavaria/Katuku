@@ -23,7 +23,7 @@ class Province:
         if name == 'color':
             self.passable = True
             self.water = False
-            if all([c <= 90 for c in value]):
+            if all([c <= 90 for c in value[:3]]):
                 self.passable = False
             elif value[2] == 255:
                 self.water = True

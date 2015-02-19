@@ -64,10 +64,6 @@ class Campaign:
                 color = tuple(surface.get_at((x, y)))  # color in RGBA
                 if color not in self.provinces.keys():
                     self.provinces[color] = Province(color, self)
-                    if all([v <= 90 for v in color[:3]]):  # if color is grayish
-                        self.provinces[color].passable = False
-                    elif color[2] == 255:
-                        self.provinces[color].water = True
                 if not last_color:
                     last_color = color
                 elif last_color != color:
