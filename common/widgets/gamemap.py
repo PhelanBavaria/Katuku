@@ -1,37 +1,35 @@
 
 
-import os
 import pygame
 from time import time
 from common.widgets import Widget
 from common import actions
+from common.widgets.overlays import Political
 
 
-class GameMap(Widget):
-    def __init__(self, pos, size, game, players):
-        Widget.__init__(self, pos, size)
+class GameMap:
+    def __init__(self, map_path, game):
         actions.PlaceUnit.subscribers.append(self.on_place)
         actions.Attack.subscribers.append(self.on_attack)
         self.game = game
-        self.players = players
-        self.provinces = {}
         self.map_pos = (0, 0)
         self.zoom = 1
+        self.province_areas = {}
+        surface = pygame.image.load(map_path)
         self.view = 'political'
-        self.views = {}
-        self.overlays = {}
-        file_name = game.campaign.map_name + '.bmp'
-        surface = pygame.image.load(os.path.join('content', 'maps', file_name))
-        self.views['political'] = surface
+        self.views = {
+            'political': Political(surface)
+        }
         width, height = surface.get_width(), surface.get_height()
         for y in range(height):
             for x in range(width):
                 color = tuple(surface.get_at((x, y)))
-                if color not in self.provinces.keys():
-                    self.provinces[color] = []
-                self.provinces[color].append((x, y))
-        for color in game.campaign.provinces.keys():
-            self.update_political(color)
+                if color not in self.province_areas.keys():
+                    self.province_areas[color] = []
+                self.province_areas[color].append((x, y))
+        for color, area in self.province_areas.items():
+            province = self.game.campaign.provinces[color]
+            self.views['political'].update(province, area)
 
     def on_click(self):
         pos = pygame.mouse.get_pos()
@@ -41,7 +39,10 @@ class GameMap(Widget):
 
     def on_place(self, action):
         pygame.time.wait(1000)
-        self.update_political(action.province.color)
+        print('Player', action.player.name, 'placed', action.unit_amount,
+              'units on', action.province.color)
+        area = self.provinces_areas[action.province.color]
+        self.views['political'].update(action.province, area)
 
     def on_attack(self, action):
         pygame.time.wait(1000)
@@ -62,29 +63,13 @@ class GameMap(Widget):
               action.attacker.unit_amount+action.unit_amount, 'units',
               'and', result,
               '(', action.defender_dice, 'vs.', action.attacker_dice, ')')
-        if action.won:
-            self.update_political(action.defender.color)
+        aarea = self.province_areas[action.attacker.color]
+        darea = self.province_areas[action.defender.color]
+        self.views['political'].update(action.attacker, aarea)
+        self.views['political'].update(action.defender, darea)
 
     def draw(self, surface):
-        surface.blit(self.views[self.view], self.pos)
-
-    def update_political(self, color):
-        province = self.game.campaign.provinces[color]
-        for pixel in self.provinces[color]:
-            bcolor = ()
-            if not province.passable:
-                pcolor = (90, 90, 90)
-            elif province.water:
-                pcolor = (64, 64, 157)
-            elif not province.controller:
-                pcolor = (160, 160, 160)
-            else:
-                pname = province.controller.name
-                pcolor = self.players[pname][0]
-                bcolor = self.players[pname][1]
-            if not bcolor:
-                bcolor = (255-v for v in pcolor)
-            self.views['political'].set_at(pixel, pcolor)
+        surface.blit(self.views[self.view].surface, (0, 0))
 
     def border_overlay(self, province):
         overlay = {}
@@ -94,13 +79,6 @@ class GameMap(Widget):
                 color = 255-r, 255-g, 255-b
             except AttributeError:
                 color = (55, 55, 55)
-            overlay[pixel] = color
-        return overlay
-
-    def unit_overlay(self, province):
-        overlay = {}
-        for pixel in province.pixels:
-            color = (255, 255, 255, 100)
             overlay[pixel] = color
         return overlay
 

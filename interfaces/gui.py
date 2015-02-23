@@ -1,6 +1,6 @@
 
 
-from random import randint
+import os
 import pygame
 from interfaces import Base
 from common.widgets import GameMap
@@ -11,14 +11,9 @@ class GUI(Base):
         Base.__init__(self, game)
         self.screen = pygame.display.set_mode((800, 800))
         pygame.display.set_caption('Katuku')
-
-        self.players = {}
-        for player in game.campaign.players:
-            pcolor = tuple(randint(0, 255) for i in range(4))
-            bcolor = tuple(randint(0, 255) for i in range(4))
-            self.players[player.name] = (pcolor, bcolor)
+        map_path = os.path.join('content', 'maps', game.campaign.map_name + '.bmp')
         self.widgets = {
-            'campaignmap': GameMap((0, 0), (80, 80), game, self.players)
+            'campaignmap': GameMap(map_path, game)
         }
         self.displayed = []
         self.selected_widget = None

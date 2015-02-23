@@ -1,5 +1,6 @@
 
 
+from random import randint
 import pygame
 from interfaces import Base
 from common import actions
@@ -9,6 +10,9 @@ class Player(Base):
     def __init__(self, name, game):
         Base.__init__(self, game)
         self.name = name
+        self.pcolor = tuple(randint(0, 255) for i in range(3))
+        self.bcolor = tuple(randint(0, 255) for i in range(3))
+        print(self.pcolor, self.bcolor)
         self.ready = False
         self.units_to_place = 0
         self.provinces = []
