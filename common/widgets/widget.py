@@ -4,9 +4,8 @@ import pygame
 
 
 class Widget(pygame.Surface):
-    def __init__(self, pos, size):
-        self.pos = pos
-        self.size = size
+    def __init__(self, size):
+        pygame.Surface.__init__(self, size)
 
     def on_click(self):
         pass

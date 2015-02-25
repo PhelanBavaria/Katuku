@@ -7,23 +7,24 @@ from common import actions
 from common.widgets.overlays import Political
 
 
-class GameMap:
+class GameMap(Widget):
     def __init__(self, map_path, game):
         actions.PlaceUnit.subscribers.append(self.on_place)
         actions.Attack.subscribers.append(self.on_attack)
+        self.surface = pygame.image.load(map_path)
+        Widget.__init__(self, self.surface.get_size())
         self.game = game
         self.map_pos = (0, 0)
         self.zoom = 1
         self.province_areas = {}
-        surface = pygame.image.load(map_path)
         self.view = 'political'
         self.views = {
-            'political': Political(surface)
+            'political': Political(self.surface)
         }
-        width, height = surface.get_width(), surface.get_height()
+        width, height = self.surface.get_width(), self.surface.get_height()
         for y in range(height):
             for x in range(width):
-                color = tuple(surface.get_at((x, y)))
+                color = tuple(self.surface.get_at((x, y)))
                 if color not in self.province_areas.keys():
                     self.province_areas[color] = []
                 self.province_areas[color].append((x, y))
@@ -33,19 +34,17 @@ class GameMap:
 
     def on_click(self):
         pos = pygame.mouse.get_pos()
-        color = self.game.campaign.prov_map.get_at(pos)
-        print('Clicked on province', color)
-        self.game.campaign.selected_province = color
+        color = tuple(self.surface.get_at(pos))
+        select_province = actions.SelectProvince(self.game.campaign, color)
+        select_province()
 
     def on_place(self, action):
-        pygame.time.wait(1000)
         print('Player', action.player.name, 'placed', action.unit_amount,
               'units on', action.province.color)
         area = self.provinces_areas[action.province.color]
         self.views['political'].update(action.province, area)
 
     def on_attack(self, action):
-        pygame.time.wait(1000)
         attacker = action.attacker.controller.name
         try:
             defender = action.defender.controller.name

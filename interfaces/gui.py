@@ -28,16 +28,17 @@ class GUI(Base):
     def update(self):
         for event in pygame.event.get():
             try:
-                self.interactions[event.type]()
+                interaction = self.interactions[event.type]
             except KeyError:
                 try:
-                    self.interactions[event.key]()
+                    interaction = self.interactions[event.key]
                 except KeyError:
                     continue
                 except AttributeError:
                     continue
             except AttributeError:
                 continue
+            interaction()
 
         for widget in self.widgets.values():
             widget.draw(self.screen)
@@ -47,9 +48,9 @@ class GUI(Base):
         self.game.run = False
 
     def select_widget(self):
-        pos = pygame.mouse.get_pos()
-        for widget in self.widgets:
-            if widget.get_rect().collidepoint(*pos):
+        x, y = pygame.mouse.get_pos()
+        for widget in self.widgets.values():
+            if widget.get_rect().collidepoint(x, y):
                 widget.on_click()
                 self.selected_widget = widget
                 break

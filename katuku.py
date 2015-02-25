@@ -20,7 +20,7 @@ game = Game()
 
 # Test:
 players = [
-    AI('test_p1', game),
+    Player('test_p1', game),
     AI('test_p2', game)
 ]
 rules = yaml.load(open('content/gamerules/dicewars.yml').read())

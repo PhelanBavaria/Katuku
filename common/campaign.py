@@ -32,7 +32,14 @@ class Campaign:
             while placing_players:
                 for player in placing_players:
                     if player.units_to_place:
-                        player.place_unit()()
+                        provinces = list(self.provinces.values())
+                        unoccupied = [p for p in provinces if p.occupiable(player)]
+                        if unoccupied:
+                            province = random.choice(unoccupied)
+                        else:
+                            province = random.choice(player.provinces)
+                            province = self.provinces[province]
+                        actions.PlaceUnit(self, province, player)()
                     else:
                         placing_players.remove(player)
 
