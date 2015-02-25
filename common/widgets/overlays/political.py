@@ -23,9 +23,6 @@ class Political(Overlay):
         if not bcolor:
             bcolor = (255-v for v in pcolor)
 
-        for pixel in area:
-            self.surface.set_at(pixel, pcolor)
-
         if province.color not in self.unit_locations.keys():
             self.unit_locations[province.color] = []
         unit_dif = province.unit_amount - len(self.unit_locations[province.color])
@@ -33,9 +30,12 @@ class Political(Overlay):
             for u in range(unit_dif):
                 pos = random.choice(area)
                 self.unit_locations[province.color].append(pos)
-                self.surface.set_at(pos, bcolor)
         elif unit_dif < 0:
             for u in range(abs(unit_dif)):
                 pos = random.choice(self.unit_locations[province.color])
                 self.unit_locations[province.color].remove(pos)
-                self.surface.set_at(pos, pcolor)
+
+        for pixel in area:
+            self.surface.set_at(pixel, pcolor)
+        for pixel in self.unit_locations[province.color]:
+            self.surface.set_at(pixel, bcolor)

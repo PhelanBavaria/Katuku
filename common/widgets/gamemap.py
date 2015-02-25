@@ -66,6 +66,9 @@ class GameMap(Widget):
         darea = self.province_areas[action.defender.color]
         self.views['political'].update(action.attacker, aarea)
         self.views['political'].update(action.defender, darea)
+        if action.won:
+            print('province', action.defender.unit_amount)
+            print('drawed', len(self.views['political'].unit_locations[action.defender.color]))
 
     def draw(self, surface):
         surface.blit(self.views[self.view].surface, (0, 0))
