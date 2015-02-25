@@ -6,11 +6,8 @@ from common import actions
 
 
 class Province:
-    color = ()
     campaign = None
     controller = None
-    inner = []
-    neighbours = set()
     unit_amount = 0
     passable = True
     water = False
@@ -18,6 +15,7 @@ class Province:
     def __init__(self, color, campaign):
         self.color = color
         self.campaign = campaign
+        self.neighbours = set()
 
     def __setattr__(self, name, value):
         if name == 'color':

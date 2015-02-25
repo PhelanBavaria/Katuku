@@ -41,7 +41,7 @@ class GameMap(Widget):
     def on_place(self, action):
         print('Player', action.player.name, 'placed', action.unit_amount,
               'units on', action.province.color)
-        area = self.provinces_areas[action.province.color]
+        area = self.province_areas[action.province.color]
         self.views['political'].update(action.province, area)
 
     def on_attack(self, action):
