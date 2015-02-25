@@ -7,11 +7,14 @@ from common import actions
 
 
 class Player(Base):
-    def __init__(self, name, game):
+    def __init__(self, name, game, pcolor, bcolor=None):
         Base.__init__(self, game)
         self.name = name
-        self.pcolor = tuple(randint(0, 255) for i in range(3))
-        self.bcolor = tuple(randint(0, 255) for i in range(3))
+        self.pcolor = pcolor
+        if bcolor:
+            self.bcolor = bcolor
+        else:
+            self.bcolor = list([255-v for v in pcolor[:3]].append(255))
         print(self.pcolor, self.bcolor)
         self.ready = False
         self.units_to_place = 0
