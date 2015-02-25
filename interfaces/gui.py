@@ -2,6 +2,7 @@
 
 import os
 import pygame
+import pygame.freetype
 from interfaces import Base
 from common.widgets import GameMap
 
@@ -20,6 +21,7 @@ class GUI(Base):
         self.interactions = {
             pygame.QUIT: self.exit,
             pygame.MOUSEBUTTONDOWN: self.select_widget,
+            pygame.MOUSEMOTION: self.hover_widget,
             pygame.K_ESCAPE: self.exit,
             pygame.K_RETURN: None
         }
@@ -53,6 +55,13 @@ class GUI(Base):
             if widget.get_rect().collidepoint(x, y):
                 widget.on_click()
                 self.selected_widget = widget
+                break
+
+    def hover_widget(self):
+        x, y = pygame.mouse.get_pos()
+        for widget in self.widgets.values():
+            if widget.get_rect().collidepoint(x, y):
+                widget.on_hover()
                 break
 
     def draw_game(self):

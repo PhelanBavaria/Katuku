@@ -25,6 +25,14 @@ def distance(origin, destination):
     ly = max(ys) - min(ys)
     return math.sqrt((lx**2) + (ly**2))
 
+def middle(area):
+    av_x = 0
+    av_y = 0
+    for x, y in area:
+        av_x += x
+        av_y += y
+    return (av_x/len(area), av_y/len(area))
+
 def adjacent(center, direct=True, across=True):
     adj = []
     if direct:

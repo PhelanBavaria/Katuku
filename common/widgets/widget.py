@@ -10,5 +10,8 @@ class Widget(pygame.Surface):
     def on_click(self):
         pass
 
+    def on_hover(self):
+        pass
+
     def draw(self, surface):
         pass

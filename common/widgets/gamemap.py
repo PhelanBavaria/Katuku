@@ -2,6 +2,7 @@
 
 import pygame
 from time import time
+from common.util import middle
 from common.widgets import Widget
 from common import actions
 from common.widgets.overlays import Political
@@ -21,6 +22,7 @@ class GameMap(Widget):
         self.views = {
             'political': Political(self.surface)
         }
+        self.hovering_over = None
         width, height = self.surface.get_width(), self.surface.get_height()
         for y in range(height):
             for x in range(width):
@@ -37,6 +39,16 @@ class GameMap(Widget):
         color = tuple(self.surface.get_at(pos))
         select_province = actions.SelectProvince(self.game.campaign, color)
         select_province()
+
+    def on_hover(self):
+        pos = pygame.mouse.get_pos()
+        color = tuple(self.surface.get_at(pos))
+        units = self.game.campaign.provinces[color].unit_amount
+        font = pygame.freetype.Font('gfx/fonts/CelticHand.ttf', 50)
+        text, rect = font.render(str(units), size=15)
+        area = self.province_areas[color]
+        rect.move_ip(*middle(area))
+        self.hovering_over = text, rect
 
     def on_place(self, action):
         print('Player', action.player.name, 'placed', action.unit_amount,
@@ -66,12 +78,12 @@ class GameMap(Widget):
         darea = self.province_areas[action.defender.color]
         self.views['political'].update(action.attacker, aarea)
         self.views['political'].update(action.defender, darea)
-        if action.won:
-            print('province', action.defender.unit_amount)
-            print('drawed', len(self.views['political'].unit_locations[action.defender.color]))
 
     def draw(self, surface):
         surface.blit(self.views[self.view].surface, (0, 0))
+        if self.hovering_over:
+            text, rect = self.hovering_over
+            surface.blit(text, rect)
 
     def border_overlay(self, province):
         overlay = {}
