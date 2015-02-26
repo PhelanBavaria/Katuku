@@ -20,28 +20,23 @@ class Campaign:
 
     def create(self):
         self.load_map(self.setup['map'])
-        for player in self.players:
-            receive = actions.ReceiveUnits(self, player)
-            units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
-            receive.extra(units)
-            receive()
+        units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
         if self.gamerules['auto_unit_placement']:
-            unassigned = [c for c, p in self.provinces.items() if
-                            p.passable and not p.water]
+            provinces = list(self.provinces.values())
             placing_players = self.players[:]
             while placing_players:
                 for player in placing_players:
-                    if player.units_to_place:
-                        provinces = list(self.provinces.values())
-                        unoccupied = [p for p in provinces if p.occupiable(player)]
-                        if unoccupied:
-                            province = random.choice(unoccupied)
-                        else:
-                            province = random.choice(player.provinces)
-                            province = self.provinces[province]
-                        actions.PlaceUnit(self, province, player)()
+                    unoccupied = [p for p in provinces if p.occupiable()]
+                    if unoccupied:
+                        province = random.choice(unoccupied)
                     else:
-                        placing_players.remove(player)
+                        province = random.choice(player.provinces)
+                        province = self.provinces[province]
+                    actions.PlaceUnit(self, province, player)()
+                if not units:
+                    break
+                else:
+                    units -= 1
 
     def update(self):
         if self.current_player == len(self.players):

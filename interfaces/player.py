@@ -28,7 +28,7 @@ class Player(Base):
 
         if not self.origin_province:
             self.goal_province = None
-        elif self.units_to_place:
+        elif self.units_to_place > 0:
             return self.place_unit()
         elif self.goal_province:
             return self.attack()
@@ -42,6 +42,7 @@ class Player(Base):
         return action
 
     def place_unit(self):
+        print('place_unit', self.units_to_place)
         return actions.PlaceUnit(self.game.campaign, self.origin_province, self)
 
     def on_province_selection(self, action):

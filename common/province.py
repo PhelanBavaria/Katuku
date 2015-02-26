@@ -40,8 +40,5 @@ class Province:
             level += province.unit_amount
         return round(level / self.unit_amount)
 
-    def occupiable(self, occupant):
-        # if not self.controller:
-        #     print(self.color, self.water, self.passable, self.controller)
-        #     print(not self.water and self.passable and not self.controller)
+    def occupiable(self):
         return not self.water and self.passable and not self.controller

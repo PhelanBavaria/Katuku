@@ -30,7 +30,7 @@ class AI(Player):
 
     def place_unit(self):
         provinces = list(self.game.campaign.provinces.values())
-        unoccupied = [p for p in provinces if p.occupiable(self)]
+        unoccupied = [p for p in provinces if p.occupiable()]
         if unoccupied:
             province = random.choice(unoccupied)
         else:
@@ -71,7 +71,7 @@ class AI(Player):
         ps = self.game.campaign.provinces
         return [p for p in self.provinces if
             [e for e in ps[p].neighbours if
-                ps[e].occupiable(self)]]
+                ps[e].occupiable()]]
 
     def most_endangered_province(self):
         most_endangered = None
