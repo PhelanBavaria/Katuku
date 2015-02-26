@@ -17,7 +17,12 @@ class Attack(Action):
         self.won = False
 
     def __call__(self):
-        self.attacker.unit_amount -= self.unit_amount
+        left = self.attacker.unit_amount - self.unit_amount
+        if left <= 0:
+            self.unit_amount += left-1
+            self.attacker.unit_amount = 1
+        else:
+            self.attacker.unit_amount -= self.unit_amount
         if self.defender.unit_amount:
             ps = self.campaign.provinces
             gamerules = self.campaign.gamerules
