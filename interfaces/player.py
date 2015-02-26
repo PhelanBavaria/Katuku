@@ -15,7 +15,6 @@ class Player(Base):
             self.bcolor = bcolor
         else:
             self.bcolor = list([255-v for v in pcolor[:3]].append(255))
-        print(self.pcolor, self.bcolor)
         self.ready = False
         self.units_to_place = 0
         self.provinces = []
@@ -42,7 +41,6 @@ class Player(Base):
         return action
 
     def place_unit(self):
-        print('place_unit', self.units_to_place)
         return actions.PlaceUnit(self.game.campaign, self.origin_province, self)
 
     def on_province_selection(self, action):

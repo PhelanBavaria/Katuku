@@ -62,5 +62,4 @@ class Political(Overlay):
         for pixel in self.unit_locations[province.color]:
             self.surface.set_at(pixel, bcolor)
         for pixel in self.borders[province.color]:
-            #print(pixel, bcolor)
             self.surface.set_at(pixel, bcolor)
