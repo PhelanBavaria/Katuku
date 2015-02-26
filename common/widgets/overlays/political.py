@@ -1,7 +1,7 @@
 
 
 import random
-from operator import itemgetter
+from common import util
 from common.widgets.overlays import Overlay
 
 
@@ -39,23 +39,7 @@ class Political(Overlay):
                 self.unit_locations[province.color].remove(pos)
 
         if province.color not in self.borders.keys():
-            border = set()
-            sorted_area = sorted(area)
-            last_x, last_y = sorted_area[0]
-            for x, y in sorted_area[1:]:
-                if y > last_y+1 or x != last_x:
-                    border.add((x, y))
-                    border.add((last_x, last_y))
-                last_x, last_y = x, y
-            sorted_area = sorted(area, key=itemgetter(1, 0))
-            last_x, last_y = sorted_area[0]
-            for x, y in sorted_area[1:]:
-                if x > last_x+1 or y != last_y:
-                    border.add((x, y))
-                    border.add((last_x, last_y))
-                last_x, last_y = x, y
-
-            self.borders[province.color] = border
+            self.borders[province.color] = util.border(area)
 
         for pixel in area:
             self.surface.set_at(pixel, pcolor)

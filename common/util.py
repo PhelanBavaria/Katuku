@@ -2,6 +2,7 @@
 
 import math
 import random
+from operator import itemgetter
 
 
 def rect(r, d, use_degrees=True):
@@ -56,6 +57,24 @@ def rand_id(length=16):
         c = random.choice(list(range(48, 58)) + list(range(65, 91)))
         _id += str(chr(c))
     return _id
+
+def border(area):
+    border = set()
+    sorted_area = sorted(area)
+    last_x, last_y = sorted_area[0]
+    for x, y in sorted_area[1:]:
+        if y > last_y+1 or x != last_x:
+            border.add((x, y))
+            border.add((last_x, last_y))
+        last_x, last_y = x, y
+    sorted_area = sorted(area, key=itemgetter(1, 0))
+    last_x, last_y = sorted_area[0]
+    for x, y in sorted_area[1:]:
+        if x > last_x+1 or y != last_y:
+            border.add((x, y))
+            border.add((last_x, last_y))
+        last_x, last_y = x, y
+    return border
 
 def is_inside_triangle(point, a, b):
     c = (a[0], b[1])
