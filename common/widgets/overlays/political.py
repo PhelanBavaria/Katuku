@@ -43,9 +43,6 @@ class Political(Overlay):
             sorted_area = sorted(area)
             last_x, last_y = sorted_area[0]
             for x, y in sorted_area[1:]:
-                #print('last_x', last_x, 'last_y', last_y)
-                #input('(x, y): (' + str(x) + ', ' + str(y) + ')')
-                #print(x > last_x+1, y != last_y)
                 if y > last_y+1 or x != last_x:
                     border.add((x, y))
                     border.add((last_x, last_y))
@@ -53,9 +50,6 @@ class Political(Overlay):
             sorted_area = sorted(area, key=itemgetter(1, 0))
             last_x, last_y = sorted_area[0]
             for x, y in sorted_area[1:]:
-                #print('last_x', last_x, 'last_y', last_y)
-                #input('(x, y): (' + str(x) + ', ' + str(y) + ')')
-                #print(x > last_x+1, y != last_y)
                 if x > last_x+1 or y != last_y:
                     border.add((x, y))
                     border.add((last_x, last_y))

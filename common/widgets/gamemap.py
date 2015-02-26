@@ -47,7 +47,8 @@ class GameMap(Widget):
         font = pygame.freetype.Font('gfx/fonts/CelticHand.ttf', 50)
         text, rect = font.render(str(units), size=15)
         area = self.province_areas[color]
-        rect.move_ip(*middle(area))
+        rect.move_ip(*pos)
+        rect = rect.move(20, -15)
         self.hovering_over = text, rect
 
     def on_place(self, action):
