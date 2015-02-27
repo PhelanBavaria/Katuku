@@ -18,16 +18,17 @@ class ReceiveUnits(Action):
 
     def place_randomly(self):
         amount = self.player.units_to_place
-        provinces = list(self.campaign.provinces.values())
-        unoccupied = [p for p in provinces if p.occupiable()]
+        provinces = self.player.provinces[:]
         for unit in range(amount):
-            if unoccupied:
-                province = random.choice(unoccupied)
-                unoccupied.remove(province)
-            else:
-                color = random.choice(self.player.provinces)
+            while True:
+                color = random.choice(provinces)
                 province = self.campaign.provinces[color]
-            PlaceUnit(self.campaign, province, self.player)()
+                action = PlaceUnit(self.campaign, province, self.player)
+                if action.useable():
+                    action()
+                    break
+                else:
+                    provinces.remove(color)
 
     def __call__(self):
         province_units = self.campaign.gamerules['new_units_per_turn']

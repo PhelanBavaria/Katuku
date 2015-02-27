@@ -22,21 +22,26 @@ class Campaign:
         self.load_map(self.setup['map'])
         units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
         if self.gamerules['auto_unit_placement']:
-            provinces = list(self.provinces.values())
-            placing_players = self.players[:]
-            while placing_players:
-                for player in placing_players:
-                    unoccupied = [p for p in provinces if p.occupiable()]
-                    if unoccupied:
-                        province = random.choice(unoccupied)
+            while True:
+                for player in self.players:
+                    provinces = list(self.provinces.values())
+                    while provinces:
+                        province = random.choice(provinces)
+                        action = actions.PlaceUnit(self, province, player)
+                        if action.useable():
+                            action()
+                            break
+                        else:
+                            provinces.remove(province)
                     else:
-                        province = random.choice(player.provinces)
-                        province = self.provinces[province]
-                    actions.PlaceUnit(self, province, player)()
-                if not units:
-                    break
+                        break
                 else:
-                    units -= 1
+                    if units <= 0:
+                        break
+                    else:
+                        units -= 1
+                        continue
+                break
 
     def update(self):
         if self.current_player == len(self.players):
