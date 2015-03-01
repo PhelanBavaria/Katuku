@@ -23,7 +23,7 @@ class GUI(Base):
             pygame.MOUSEBUTTONDOWN: self.select_widget,
             pygame.MOUSEMOTION: self.hover_widget,
             pygame.K_ESCAPE: self.exit,
-            pygame.K_RETURN: None
+            pygame.K_RETURN: self.end_turn
         }
         pygame.display.flip()
 
@@ -48,6 +48,9 @@ class GUI(Base):
 
     def exit(self):
         self.game.run = False
+
+    def end_turn(self):
+        self.game.campaign.events['human_end_turn'] = True
 
     def select_widget(self):
         x, y = pygame.mouse.get_pos()

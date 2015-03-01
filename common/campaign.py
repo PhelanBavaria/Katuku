@@ -17,6 +17,9 @@ class Campaign:
         self.players = setup['players']
         self.gamerules = setup['rules']
         self.provinces = {}
+        self.events = {
+            'human_end_turn': False
+        }
 
     def create(self):
         self.load_map(self.setup['map'])
@@ -53,6 +56,7 @@ class Campaign:
             actions.ReceiveUnits(self, self.players[self.current_player])()
             print('Player', self.players[self.current_player].name, 'ready')
             self.current_player += 1
+            self.events['human_end_turn'] = False
         else:
             decision = self.players[self.current_player].make_decision()
             if decision:

@@ -23,6 +23,10 @@ class Player(Base):
         actions.SelectProvince.subscribers.append(self.on_province_selection)
 
     def make_decision(self):
+        if self.game.campaign.events['human_end_turn']:
+            self.ready = True
+            return
+
         campaign = self.game.campaign
 
         if not self.origin_province:
