@@ -6,6 +6,7 @@ from pygame import image
 from common import util
 from common import actions
 from common import Province
+from interfaces import player_types
 
 
 class Campaign:
@@ -14,7 +15,8 @@ class Campaign:
         self.paused = False
         self.current_player = 0
         self.map_name = ''
-        self.players = setup['players']
+        self.players = [player_types[p](n, g, c1, c2) for p, n, g, c1, c2
+                        in setup['players']]
         self.gamerules = setup['rules']
         self.provinces = {}
         self.events = {

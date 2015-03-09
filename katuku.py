@@ -20,8 +20,8 @@ game = Game()
 
 # Test:
 players = [
-    AI('test_p1', game, (0, 68, 153, 255), (255, 255, 255, 255)),
-    AI('test_p2', game, (255, 57, 0, 255), (0, 0, 0, 255))
+    ('ai', 'test_p1', game, (0, 68, 153, 255), (255, 255, 255, 255)),
+    ('ai', 'test_p2', game, (255, 57, 0, 255), (0, 0, 0, 255))
 ]
 rules = yaml.load(open('content/gamerules/dicewars.yml').read())
 setup = {
@@ -41,7 +41,7 @@ game.local_interface = GUI(game)
 
 while game.run:
     game.update()
-    remaining = [player for player in players if len(player.provinces)]
+    remaining = [player for player in game.campaign.players if len(player.provinces)]
     if len(remaining) == 1:
         print('Player', remaining[0].name, 'has won!')
         print('Occupied provinces:', len(remaining[0].provinces))
