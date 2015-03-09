@@ -25,26 +25,15 @@ class Campaign:
         self.load_map(self.setup['map'])
         units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
         if self.gamerules['auto_unit_placement']:
-            while True:
+            provinces = list(self.provinces.values())
+            while provinces:
                 for player in self.players:
-                    provinces = list(self.provinces.values())
-                    while provinces:
-                        province = random.choice(provinces)
-                        action = actions.PlaceUnit(self, province, player)
-                        if action.useable():
-                            action()
-                            break
-                        else:
-                            provinces.remove(province)
-                    else:
+                    if not provinces:
                         break
-                else:
-                    if units <= 0:
-                        break
-                    else:
-                        units -= 1
-                        continue
-                break
+                    province = random.choice(provinces)
+                    actions.ChangeOwner(province, player)()
+                    actions.AmassUnits(self, province, player)
+                    provinces.remove(province)
 
     def update(self):
         if self.current_player == len(self.players):
@@ -53,14 +42,21 @@ class Campaign:
                 player.ready = False
             print('End Turn')
         elif self.players[self.current_player].ready:
-            actions.ReceiveUnits(self, self.players[self.current_player])()
             print('Player', self.players[self.current_player].name, 'ready')
+            actions.ReceiveUnits(self, self.players[self.current_player])()
             self.current_player += 1
             self.events['human_end_turn'] = False
         else:
             decision = self.players[self.current_player].make_decision()
             if decision:
                 decision()
+
+    def place_random_units(self, player):
+        while player.units_to_place:
+            units = random.randint(1, player.units_to_place-1)
+            color = random.choice(player.provinces)
+            province = self.provinces[color]
+            actions.AmassUnits(self, province, player, units)()
 
     def load_map(self, name):
         file_name = name + '.bmp'

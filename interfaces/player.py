@@ -45,7 +45,7 @@ class Player(Base):
         return action
 
     def place_unit(self):
-        return actions.PlaceUnit(self.game.campaign, self.origin_province, self)
+        return actions.AmassUnits(self.game.campaign, self.origin_province, self)
 
     def on_province_selection(self, action):
         province = self.game.campaign.provinces[action.color]

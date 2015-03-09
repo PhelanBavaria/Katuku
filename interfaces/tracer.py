@@ -7,7 +7,8 @@ from common import actions
 class Tracer(Base):
     def __init__(self, game):
         actions.SelectProvince.subscribers.append(self.on_select_province)
-        actions.PlaceUnit.subscribers.append(self.on_place_unit)
+        actions.AmassUnits.subscribers.append(self.on_amass_units)
+        actions.ChangeOwner.subscribers.append(self.on_change_owner)
         actions.Attack.subscribers.append(self.on_attack)
         actions.ReceiveUnits.subscribers.append(self.on_receive_units)
 
@@ -18,9 +19,12 @@ class Tracer(Base):
         print('Player', action.player.name, 'received', action.province_units,
               'units from provinces and', action.extra_units, 'extra units')
 
-    def on_place_unit(self, action):
+    def on_amass_units(self, action):
         print('Player', action.player.name, 'placed', action.unit_amount,
               'units on', action.province.color)
+
+    def on_change_owner(self, action):
+        print('Player', action.player.name, 'occupied', action.province.color)
 
     def on_attack(self, action):
         attacker = action.attacker.controller.name

@@ -29,14 +29,9 @@ class AI(Player):
                               province.unit_amount-1)
 
     def place_unit(self):
-        provinces = list(self.game.campaign.provinces.values())
-        unoccupied = [p for p in provinces if p.occupiable()]
-        if unoccupied:
-            province = random.choice(unoccupied)
-        else:
-            province = random.choice(self.provinces)
-            province = self.game.campaign.provinces[province]
-        return actions.PlaceUnit(self.game.campaign, province, self)
+        province = random.choice(self.provinces)
+        province = self.game.campaign.provinces[province]
+        return actions.AmassUnits(self.game.campaign, province, self)
 
     def possible_battles(self):
         ps = self.game.campaign.provinces

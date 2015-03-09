@@ -10,7 +10,8 @@ from common.widgets.overlays import Political
 
 class GameMap(Widget):
     def __init__(self, map_path, game):
-        actions.PlaceUnit.subscribers.append(self.on_place)
+        actions.AmassUnits.subscribers.append(self.on_place)
+        actions.ChangeOwner.subscribers.append(self.on_place)
         actions.Attack.subscribers.append(self.on_attack)
         self.surface = pygame.image.load(map_path)
         Widget.__init__(self, self.surface.get_size())
