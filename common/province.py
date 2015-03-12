@@ -21,10 +21,12 @@ class Province:
         if name == 'color':
             self.passable = True
             self.water = False
-            if all([c <= 90 for c in value[:3]]):
+            hue = util.rgb_to_hsv(value)[0]
+            if all([c == 255 for c in value[:3]]):
                 self.passable = False
-            elif value[2] == 255:
+            elif hue >= 180 and hue <= 260:
                 self.water = True
+                print('water', value, hue)
         elif name == 'controller':
             if self.controller:
                 self.controller.provinces.remove(self.color)

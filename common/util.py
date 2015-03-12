@@ -2,6 +2,7 @@
 
 import math
 import random
+import colorsys
 from operator import itemgetter
 
 
@@ -75,6 +76,11 @@ def border(area):
             border.add((last_x, last_y))
         last_x, last_y = x, y
     return border
+
+def rgb_to_hsv(value):
+    r, g, b = [v/255 for v in value[:3]]
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    return round(h*360), round(s*100), round(v*100)
 
 def is_inside_triangle(point, a, b):
     c = (a[0], b[1])

@@ -48,6 +48,7 @@ class Campaign:
             actions.ReceiveUnits(self, self.players[self.current_player])()
             self.current_player += 1
             self.events['human_end_turn'] = False
+            input()
         else:
             decision = self.players[self.current_player].make_decision()
             if decision:
