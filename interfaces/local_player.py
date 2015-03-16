@@ -2,26 +2,11 @@
 
 from random import randint
 import pygame
-from interfaces import Base
+from interfaces import Player
 from common import actions
 
 
-class Player(Base):
-    def __init__(self, name, game, pcolor, bcolor=None):
-        Base.__init__(self, game)
-        self.name = name
-        self.pcolor = pcolor
-        if bcolor:
-            self.bcolor = bcolor
-        else:
-            self.bcolor = list([255-v for v in pcolor[:3]].append(255))
-        self.ready = False
-        self.units_to_place = 0
-        self.provinces = []
-        self.origin_province = None
-        self.goal_province = None
-        actions.SelectProvince.subscribers.append(self.on_province_selection)
-
+class LocalPlayer(Player):
     def make_decision(self):
         campaign = self.game.campaign
 

@@ -19,13 +19,12 @@ class Campaign:
                         in setup['players']]
         self.gamerules = setup['rules']
         self.provinces = {}
-        self.events = {
-            'human_end_turn': False
-        }
 
     def create(self):
         self.load_map(self.setup['map'])
         units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
+        for player in self.players:
+            player.units_to_place = units
         if self.gamerules['auto_unit_placement']:
             provinces = list(self.provinces.values())
             while provinces:
@@ -34,7 +33,7 @@ class Campaign:
                         break
                     province = random.choice(provinces)
                     actions.ChangeOwner(province, player)()
-                    actions.AmassUnits(self, province, player)
+                    actions.AmassUnits(self, province, player)()
                     provinces.remove(province)
 
     def update(self):
@@ -47,8 +46,6 @@ class Campaign:
             print('Player', self.players[self.current_player].name, 'ready')
             actions.ReceiveUnits(self, self.players[self.current_player])()
             self.current_player += 1
-            self.events['human_end_turn'] = False
-            input()
         else:
             decision = self.players[self.current_player].make_decision()
             if decision:

@@ -4,6 +4,7 @@ import os
 import pygame
 import pygame.freetype
 from interfaces import Base
+from interfaces import LocalPlayer
 from common.widgets import GameMap
 
 
@@ -50,7 +51,9 @@ class GUI(Base):
         self.game.run = False
 
     def end_turn(self):
-        self.game.campaign.events['human_end_turn'] = True
+        player = self.game.campaign.players[self.game.campaign.current_player]
+        if type(player) == LocalPlayer:
+            player.ready = True
 
     def select_widget(self):
         x, y = pygame.mouse.get_pos()
