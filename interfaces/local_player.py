@@ -16,11 +16,11 @@ class LocalPlayer(Player):
         return action
 
     def place_unit(self):
-        return actions.AmassUnits(self.game.campaign, self.country.origin_province, self)
+        return actions.AmassUnits(self.game.campaign, self.country.origin_province, self.country)
 
     def on_province_selection(self, action):
         province = self.game.campaign.provinces[action.color]
-        if province.controller == self:
+        if province.controller == self.country:
             self.country.origin_province = province
         elif province == self.country.origin_province:
             self.country.origin_province = None

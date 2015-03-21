@@ -26,7 +26,6 @@ class Province:
                 self.passable = False
             elif hue >= 180 and hue <= 260:
                 self.water = True
-                print('water', value, hue)
         elif name == 'controller':
             if self.controller:
                 self.controller.provinces.remove(self.color)

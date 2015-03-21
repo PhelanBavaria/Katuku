@@ -33,7 +33,7 @@ class AI(Player):
     def place_unit(self):
         province = random.choice(self.country.provinces)
         province = self.game.campaign.provinces[province]
-        return actions.AmassUnits(self.game.campaign, province, self)
+        return actions.AmassUnits(self.game.campaign, province, self.country)
 
     def possible_battles(self):
         ps = self.game.campaign.provinces

@@ -53,8 +53,8 @@ class GameMap(Widget):
         self.hovering_over = text, rect
 
     def on_place(self, action):
-        print('Player', action.player.name, 'placed', action.unit_amount,
-              'units on', action.province.color)
+        print('Player', action.country.name, 'placed', action.unit_amount,
+              'units on', action.province.color, action.country.units_to_place, 'left')
         area = self.province_areas[action.province.color]
         self.views['political'].update(action.province, area)
 
