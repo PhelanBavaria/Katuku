@@ -11,7 +11,9 @@ class AI(Player):
         pass
 
     def make_decision(self):
-        if self.units_to_place:
+        if not self.country:
+            return
+        elif self.country.units_to_place:
             return self.place_unit()
         else:
             return self.attack()
@@ -29,7 +31,7 @@ class AI(Player):
                               province.unit_amount-1)
 
     def place_unit(self):
-        province = random.choice(self.provinces)
+        province = random.choice(self.country.provinces)
         province = self.game.campaign.provinces[province]
         return actions.AmassUnits(self.game.campaign, province, self)
 

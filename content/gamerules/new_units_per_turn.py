@@ -1,7 +1,7 @@
 
 
-def max_connected_provinces(campaign, player):
-    provinces = player.provinces[:]
+def max_connected_provinces(campaign, country):
+    provinces = country.provinces[:]
     if not provinces:
         return 0
     groups = []

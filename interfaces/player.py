@@ -7,53 +7,34 @@ from common import actions
 
 
 class Player(Base):
-    def __init__(self, name, game, pcolor, bcolor=None):
+    def __init__(self, name, game, country=None):
         Base.__init__(self, game)
         self.name = name
-        self.pcolor = pcolor
-        if bcolor:
-            self.bcolor = bcolor
-        else:
-            self.bcolor = list([255-v for v in pcolor[:3]].append(255))
+        self.country = country
         self.ready = False
-        self.units_to_place = 0
-        self.provinces = []
-        self.origin_province = None
-        self.goal_province = None
         actions.SelectProvince.subscribers.append(self.on_province_selection)
 
     def make_decision(self):
+        if not self.country:
+            return
+
         campaign = self.game.campaign
 
-        if not self.origin_province:
-            self.goal_province = None
-        elif self.units_to_place > 0:
+        if not self.country.origin_province:
+            self.country.goal_province = None
+        elif self.country.units_to_place > 0:
             return self.place_unit()
-        elif self.goal_province:
+        elif self.country.goal_province:
             return self.attack()
 
     def attack(self):
-        action = actions.Attack(self.game.campaign, self.goal_province,
-                                self.origin_province,
-                                self.origin_province.unit_amount)
-        self.origin_province = None
-        self.goal_province = None
-        return action
+        pass
 
     def place_unit(self):
-        return actions.AmassUnits(self.game.campaign, self.origin_province, self)
+        pass
 
     def on_province_selection(self, action):
-        province = self.game.campaign.provinces[action.color]
-        print('Selected province:', action.color,
-              '\nController:', province.controller,
-              '\nUnits:', province.unit_amount)
-        if province.controller == self:
-            self.origin_province = province
-        elif province == self.origin_province:
-            self.origin_province = None
-        elif self.origin_province and province.color in self.origin_province.neighbours:
-            self.goal_province = province
+        pass
 
     def bordering_provinces(self):
         for province in self.provinces:

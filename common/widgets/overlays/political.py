@@ -12,19 +12,19 @@ class Political(Overlay):
         self.borders = {}
 
     def update(self, province, area):
-        bcolor = ()
+        sec_color = ()
         if not province.passable:
-            pcolor = (90, 90, 90)
+            prim_color = (90, 90, 90)
         elif province.water:
-            pcolor = (64, 64, 157)
-            bcolor = (100, 100, 157)
+            prim_color = (64, 64, 157)
+            sec_color = (100, 100, 157)
         elif not province.controller:
-            pcolor = (160, 160, 160)
+            prim_color = (160, 160, 160)
         else:
-            pcolor = province.controller.pcolor
-            bcolor = province.controller.bcolor
-        if not bcolor:
-            bcolor = tuple(255-v for v in pcolor)
+            prim_color = province.controller.prim_color
+            sec_color = province.controller.sec_color
+        if not sec_color:
+            sec_color = tuple(255-v for v in prim_color)
 
         if province.color not in self.unit_locations.keys():
             self.unit_locations[province.color] = []
@@ -42,8 +42,8 @@ class Political(Overlay):
             self.borders[province.color] = util.border(area)
 
         for pixel in area:
-            self.surface.set_at(pixel, pcolor)
+            self.surface.set_at(pixel, prim_color)
         for pixel in self.unit_locations[province.color]:
-            self.surface.set_at(pixel, bcolor)
+            self.surface.set_at(pixel, sec_color)
         for pixel in self.borders[province.color]:
-            self.surface.set_at(pixel, bcolor)
+            self.surface.set_at(pixel, sec_color)

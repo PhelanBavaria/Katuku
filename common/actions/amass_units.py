@@ -5,10 +5,10 @@ from common.actions import Action
 
 class AmassUnits(Action):
     subscribers = []
-    def __init__(self, campaign, province, player, unit_amount=1):
+    def __init__(self, campaign, province, country, unit_amount=1):
         self.campaign = campaign
         self.province = province
-        self.player = player
+        self.country = country
         self.unit_amount = unit_amount
 
     def __call__(self):
@@ -18,7 +18,7 @@ class AmassUnits(Action):
         print(self.unit_amount, max_units, self.province.unit_amount)
         self.unit_amount = min(self.unit_amount, max_units-self.province.unit_amount)
         Action.__call__(self)
-        self.player.units_to_place -= self.unit_amount
+        self.country.units_to_place -= self.unit_amount
         self.province.unit_amount += self.unit_amount
         return True
 
@@ -26,5 +26,5 @@ class AmassUnits(Action):
         max_units = self.campaign.gamerules['max_units_province']
 
         unit_cap = self.province.unit_amount >= max_units
-        same_controller = self.province.controller == self.player
+        same_controller = self.province.controller == self.country
         return not unit_cap and same_controller

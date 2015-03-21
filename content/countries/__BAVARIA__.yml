@@ -1,0 +1,10 @@
+prim_color: !!python/tuple
+- 0
+- 68
+- 153
+- 255
+sec_color: !!python/tuple
+- 255
+- 255
+- 255
+- 255
