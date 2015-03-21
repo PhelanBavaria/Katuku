@@ -15,7 +15,6 @@ class AmassUnits(Action):
         if not self.useable():
             return False
         max_units = self.campaign.gamerules['max_units_province']
-        print(self.unit_amount, max_units, self.province.unit_amount)
         self.unit_amount = min(self.unit_amount, max_units-self.province.unit_amount)
         Action.__call__(self)
         self.country.units_to_place -= self.unit_amount

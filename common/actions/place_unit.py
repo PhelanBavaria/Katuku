@@ -30,8 +30,4 @@ class PlaceUnit(Action):
         not_unit_cap = self.province.unit_amount < max_units
         same_controller = self.province.controller == self.player
         no_controller = self.province.controller == None
-        if not (not_unit_cap and same_controller or no_controller):
-            print('Controller:', self.province.controller, self.player)
-            print('Not useable because:', not_unit_cap, same_controller, no_controller)
-            input()
         return not_unit_cap and same_controller or no_controller

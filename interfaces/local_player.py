@@ -20,9 +20,6 @@ class LocalPlayer(Player):
 
     def on_province_selection(self, action):
         province = self.game.campaign.provinces[action.color]
-        print('Selected province:', action.color,
-              '\nController:', province.controller,
-              '\nUnits:', province.unit_amount)
         if province.controller == self:
             self.country.origin_province = province
         elif province == self.country.origin_province:
