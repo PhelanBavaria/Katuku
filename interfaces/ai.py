@@ -38,7 +38,7 @@ class AI(Player):
     def possible_battles(self):
         ps = self.game.campaign.provinces
         battles = []
-        for p in self.provinces:
+        for p in self.country.provinces:
             if ps[p].unit_amount < 2:
                 continue
             for n in ps[p].neighbours:

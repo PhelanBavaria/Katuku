@@ -41,5 +41,8 @@ class Province:
             level += province.unit_amount
         return round(level / self.unit_amount)
 
+    def conquerable(self):
+        return not self.water and self.passable
+
     def occupiable(self):
-        return not self.water and self.passable and not self.controller
+        return self.conquerable and not self.controller

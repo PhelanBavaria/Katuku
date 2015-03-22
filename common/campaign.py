@@ -39,6 +39,8 @@ class Campaign:
                     actions.ChangeOwner(province, player.country)()
                     actions.AmassUnits(self, province, player.country)()
                     provinces.remove(province)
+            for player in self.players:
+                self.random_placement(player.country)
 
     def update(self):
         if self.current_player == len(self.players):
@@ -54,6 +56,14 @@ class Campaign:
             decision = self.players[self.current_player].make_decision()
             if decision:
                 decision()
+
+    def random_placement(self, country):
+        provinces = country.provinces[:]
+        while provinces and country.units_to_place:
+            color = random.choice(provinces)
+            province = self.provinces[color]
+            if not actions.AmassUnits(self, province, country)():
+                provinces.remove(color)
 
     def load_map(self, name):
         file_name = name + '.bmp'

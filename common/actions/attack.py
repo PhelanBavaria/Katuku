@@ -45,4 +45,4 @@ class Attack(Action):
         return True
 
     def useable(self):
-        return self.defender.occupiable()
+        return self.defender.conquerable()
