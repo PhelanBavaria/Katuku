@@ -17,6 +17,9 @@ class Attack(Action):
         self.won = False
 
     def __call__(self):
+        if not self.useable():
+            return False
+
         left = self.attacker.unit_amount - self.unit_amount
         if left <= 0:
             self.unit_amount += left-1
@@ -34,8 +37,12 @@ class Attack(Action):
             self.defender_dice = sd
             if sa <= sd:
                 Action.__call__(self)
-                return
+                return True
         self.won = True
         self.defender.unit_amount = self.unit_amount
         self.defender.controller = self.attacker.controller
         Action.__call__(self)
+        return True
+
+    def useable(self):
+        return self.defender.occupiable()

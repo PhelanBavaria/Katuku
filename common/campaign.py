@@ -33,6 +33,9 @@ class Campaign:
                     if not provinces:
                         break
                     province = random.choice(provinces)
+                    while not province.occupiable():
+                        provinces.remove(province)
+                        province = random.choice(provinces)
                     actions.ChangeOwner(province, player.country)()
                     actions.AmassUnits(self, province, player.country)()
                     provinces.remove(province)

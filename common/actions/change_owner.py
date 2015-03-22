@@ -18,4 +18,4 @@ class ChangeOwner(Action):
 
     def useable(self):
         same_controller = self.province.controller == self.country
-        return not same_controller
+        return not same_controller and self.province.occupiable()
