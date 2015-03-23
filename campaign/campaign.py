@@ -50,6 +50,8 @@ class Campaign:
         elif self.players[self.current_player].ready:
             print('Player', self.players[self.current_player].name, 'ready')
             actions.ReceiveUnits(self, self.players[self.current_player].country)()
+            if self.gamerules['auto_unit_placement']:
+                self.random_placement(self.players[self.current_player].country)
             self.current_player += 1
         else:
             decision = self.players[self.current_player].make_decision()
