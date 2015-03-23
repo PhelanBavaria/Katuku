@@ -4,13 +4,8 @@ import random
 import yaml
 import pygame
 from common import Game
+from campaign import Campaign
 from interfaces import GUI
-from interfaces import CommandLine
-from interfaces import Tracer
-from common import Campaign
-from common import Country
-from interfaces import Player
-from interfaces import AI
 
 
 
@@ -21,10 +16,10 @@ game = Game()
 
 # Test:
 players = [
-    ('local', 'test_p1', game, '__BAVARIA__'),
-    ('ai', 'test_p2', game, '__TESTIA__')
+    ('local', 'test_p1', '__BAVARIA__'),
+    ('ai', 'test_p2', '__TESTIA__')
 ]
-rules = yaml.load(open('content/gamerules/dicewars.yml').read())
+rules = yaml.load(open('campaign/gamerules/dicewars.yml').read())
 setup = {
     'map': 'Europe',
     'rules': rules,

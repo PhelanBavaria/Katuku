@@ -1,15 +1,12 @@
 
 
-from random import randint
-import pygame
-from interfaces import Base
 from common import actions
 
 
-class Player(Base):
-    def __init__(self, name, game, country=None):
-        Base.__init__(self, game)
+class Player:
+    def __init__(self, name, campaign, country=None):
         self.name = name
+        self.campaign = campaign
         self.country = country
         self.ready = False
         actions.SelectProvince.subscribers.append(self.on_province_selection)
@@ -17,8 +14,6 @@ class Player(Base):
     def make_decision(self):
         if not self.country:
             return
-
-        campaign = self.game.campaign
 
         if not self.country.origin_province:
             self.country.goal_province = None

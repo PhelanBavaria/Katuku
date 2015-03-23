@@ -3,11 +3,10 @@
 import os
 import random
 from pygame import image
-from common import util
 from common import actions
-from common import Country
-from common import Province
-from interfaces import player_types
+from campaign import Country
+from campaign import Province
+from campaign import controllers
 
 
 class Campaign:
@@ -16,7 +15,7 @@ class Campaign:
         self.paused = False
         self.current_player = 0
         self.map_name = ''
-        self.players = [player_types[p](n, g, Country(c)) for p, n, g, c
+        self.players = [controllers.types[p](n, self, Country(c)) for p, n, c
                         in setup['players']]
         self.gamerules = setup['rules']
         self.provinces = {}
@@ -69,7 +68,7 @@ class Campaign:
         file_name = name + '.bmp'
         print('Loading map:', file_name)
         self.map_name = name
-        surface = image.load(os.path.join('content', 'maps', file_name))
+        surface = image.load(os.path.join('campaign', 'maps', file_name))
         width, height = surface.get_width(), surface.get_height()
         # Scanning the map from left to right, top to bottom first
         for y in range(height):

@@ -1,14 +1,12 @@
 
 
-from random import randint
-import pygame
-from interfaces import Player
+from campaign.controllers import Player
 from common import actions
 
 
 class LocalPlayer(Player):
     def attack(self):
-        action = actions.Attack(self.game.campaign, self.country.goal_province,
+        action = actions.Attack(self.campaign, self.country.goal_province,
                                 self.country.origin_province,
                                 self.country.origin_province.unit_amount)
         self.country.origin_province = None
@@ -16,10 +14,10 @@ class LocalPlayer(Player):
         return action
 
     def place_unit(self):
-        return actions.AmassUnits(self.game.campaign, self.country.origin_province, self.country)
+        return actions.AmassUnits(self.campaign, self.country.origin_province, self.country)
 
     def on_province_selection(self, action):
-        province = self.game.campaign.provinces[action.color]
+        province = self.campaign.provinces[action.color]
         if province.controller == self.country:
             self.country.origin_province = province
         elif province == self.country.origin_province:

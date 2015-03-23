@@ -4,7 +4,7 @@ import os
 import pygame
 import pygame.freetype
 from interfaces import Base
-from interfaces import LocalPlayer
+from campaign.controllers import LocalPlayer
 from common.widgets import GameMap
 
 
@@ -13,7 +13,7 @@ class GUI(Base):
         Base.__init__(self, game)
         self.screen = pygame.display.set_mode((800, 800))
         pygame.display.set_caption('Katuku')
-        map_path = os.path.join('content', 'maps', game.campaign.map_name + '.bmp')
+        map_path = os.path.join('campaign', 'maps', game.campaign.map_name + '.bmp')
         self.widgets = {
             'campaignmap': GameMap(map_path, game)
         }

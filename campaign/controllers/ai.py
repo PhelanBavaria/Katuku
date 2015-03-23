@@ -1,8 +1,7 @@
 
 
 import random
-from common import util
-from interfaces import Player
+from campaign.controllers import Player
 from common import actions
 
 
@@ -19,7 +18,6 @@ class AI(Player):
             return self.attack()
 
     def attack(self):
-        ps = self.game.campaign.provinces
         battles = self.possible_battles()
         if not battles:
             self.ready = True
@@ -27,16 +25,16 @@ class AI(Player):
         battle = random.choice(battles)
         province = battle[1]
         enemy_prov = battle[2]
-        return actions.Attack(self.game.campaign, enemy_prov, province,
+        return actions.Attack(self.campaign, enemy_prov, province,
                               province.unit_amount-1)
 
     def place_unit(self):
         province = random.choice(self.country.provinces)
-        province = self.game.campaign.provinces[province]
-        return actions.AmassUnits(self.game.campaign, province, self.country)
+        province = self.campaign.provinces[province]
+        return actions.AmassUnits(self.campaign, province, self.country)
 
     def possible_battles(self):
-        ps = self.game.campaign.provinces
+        ps = self.campaign.provinces
         battles = []
         for p in self.country.provinces:
             if ps[p].unit_amount < 2:
@@ -56,7 +54,7 @@ class AI(Player):
         return battles
 
     def neighbours(self):
-        ps = self.game.campaign.provinces
+        ps = self.campaign.provinces
         result = set()
         for p in self.provinces:
             for n in ps[p].neighbours:
@@ -65,7 +63,7 @@ class AI(Player):
         return result
 
     def border(self):
-        ps = self.game.campaign.provinces
+        ps = self.campaign.provinces
         return [p for p in self.provinces if
             [e for e in ps[p].neighbours if
                 ps[e].occupiable()]]
@@ -73,7 +71,7 @@ class AI(Player):
     def most_endangered_province(self):
         most_endangered = None
         for province in self.provinces:
-            province = self.game.campaign.provinces[province]
+            province = self.campaign.provinces[province]
             if not most_endangered:
                 most_endangered = province.endangered()
             else:
