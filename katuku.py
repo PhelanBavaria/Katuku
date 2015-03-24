@@ -19,7 +19,7 @@ players = [
     ('local', 'test_p1', '__BAVARIA__'),
     ('ai', 'test_p2', '__TESTIA__')
 ]
-rules = yaml.load(open('campaign/gamerules/dicewars.yml').read())
+rules = yaml.load(open('campaign/gamerules/capital_expansion.yml').read())
 setup = {
     'map': 'Europe',
     'rules': rules,

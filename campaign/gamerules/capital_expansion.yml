@@ -4,3 +4,4 @@ max_dice_defence: 5
 max_units_province: 100
 new_units_per_turn: !!python/name:campaign.gamerules.new_units_per_turn.max_connected_provinces ''
 start_units: 5
+fill_remaining_provinces: true
