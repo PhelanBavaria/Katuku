@@ -22,10 +22,8 @@ class Campaign:
 
     def create(self):
         self.load_map(self.setup['map'])
-        units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
-        for player in self.players:
-            player.country.units_to_place = units
         provinces = list(self.provinces.values())
+
         if self.gamerules['auto_unit_placement']:
             if self.gamerules['start_province_limit']:
                 for i in range(self.gamerules['start_province_limit']):
@@ -54,7 +52,11 @@ class Campaign:
                         actions.ChangeOwner(province, player.country)()
                         actions.AmassUnits(self, province, player.country)()
                         provinces.remove(province)
+
             for player in self.players:
+                units = self.gamerules['start_units'] * \
+                        len(player.country.provinces)
+                player.country.units_to_place += units
                 self.random_placement(player.country)
         else:
             print('Not implemented yet that province are selected manually')
@@ -68,6 +70,7 @@ class Campaign:
                 actions.AmassUnits(self, province, independent.country)()
             provinces = []
             self.players.append(independent)
+
 
     def update(self):
         if self.current_player == len(self.players):
