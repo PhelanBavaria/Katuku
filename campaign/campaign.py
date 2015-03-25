@@ -25,21 +25,49 @@ class Campaign:
         units = self.gamerules['start_units']*len(self.provinces)//len(self.players)
         for player in self.players:
             player.country.units_to_place = units
+        provinces = list(self.provinces.values())
         if self.gamerules['auto_unit_placement']:
-            provinces = list(self.provinces.values())
-            while provinces:
-                for player in self.players:
+            if self.gamerules['start_province_limit']:
+                for i in range(self.gamerules['start_province_limit']):
+                    for player in self.players:
+                        if not provinces:
+                            break
+                        province = random.choice(provinces)
+                        while not province.occupiable():
+                            provinces.remove(province)
+                            print(province.color)
+                            province = random.choice(provinces)
+                        actions.ChangeOwner(province, player.country)()
+                        actions.AmassUnits(self, province, player.country)()
+                        provinces.remove(province)
                     if not provinces:
                         break
-                    province = random.choice(provinces)
-                    while not province.occupiable():
-                        provinces.remove(province)
+            else:
+                while provinces:
+                    for player in self.players:
+                        if not provinces:
+                            break
                         province = random.choice(provinces)
-                    actions.ChangeOwner(province, player.country)()
-                    actions.AmassUnits(self, province, player.country)()
-                    provinces.remove(province)
+                        while not province.occupiable():
+                            provinces.remove(province)
+                            province = random.choice(provinces)
+                        actions.ChangeOwner(province, player.country)()
+                        actions.AmassUnits(self, province, player.country)()
+                        provinces.remove(province)
             for player in self.players:
                 self.random_placement(player.country)
+        else:
+            print('Not implemented yet that province are selected manually')
+
+        if self.gamerules['fill_remaining_provinces']:
+            independent = controllers.Independent(self)
+            for province in provinces:
+                if not province.conquerable():
+                    continue
+                actions.ChangeOwner(province, independent.country)()
+                actions.AmassUnits(self, province, independent.country)()
+            provinces = []
+            self.players.append(independent)
 
     def update(self):
         if self.current_player == len(self.players):
