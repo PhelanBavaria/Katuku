@@ -1,20 +1,19 @@
 
 
 from campaign.controllers import Player
-from common import actions
+from common import events
 
 
 class LocalPlayer(Player):
     def attack(self):
-        action = actions.Attack(self.campaign, self.country.goal_province,
-                                self.country.origin_province,
-                                self.country.origin_province.unit_amount)
+        result = self.campaign.events['attack'].trigger(self.country.origin_province, self.country.goal_province, self.country.origin_province.unit_amount)
         self.country.origin_province = None
         self.country.goal_province = None
-        return action
+        return result
 
     def place_unit(self):
-        return actions.AmassUnits(self.campaign, self.country.origin_province, self.country)
+        province = self.country.origin_province
+        return self.campaign.events['amass_units'].trigger(province)
 
     def on_province_selection(self, action):
         province = self.campaign.provinces[action.color]

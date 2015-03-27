@@ -1,11 +1,11 @@
 
 
 import random
-from common.actions import Action
-from common.actions import AmassUnits
+from common.events import Event
+from common.events import AmassUnits
 
 
-class ReceiveUnits(Action):
+class ReceiveUnits(Event):
     subscribers = []
     def __init__(self, campaign, country):
         self.campaign = campaign
@@ -22,7 +22,7 @@ class ReceiveUnits(Action):
             self.province_units = province_units(self.campaign, self.country)
         else:
             self.province_units = province_units
-        Action.__call__(self)
+        #Event.__call__(self)
         self.country.units_to_place += self.province_units
         self.country.units_to_place += self.extra_units
         self.province_units = 0

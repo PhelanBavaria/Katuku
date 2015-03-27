@@ -1,9 +1,9 @@
 
 
-from common.actions import Action
+from common.events import Event
 
 
-class AmassUnits(Action):
+class AmassUnits(Event):
     subscribers = []
     def __init__(self, campaign, province, country, unit_amount=1):
         self.campaign = campaign
@@ -16,7 +16,7 @@ class AmassUnits(Action):
             return False
         max_units = self.campaign.gamerules['max_units_province']
         self.unit_amount = min(self.unit_amount, max_units-self.province.unit_amount)
-        Action.__call__(self)
+        #Event.__call__(self)
         self.country.units_to_place -= self.unit_amount
         self.province.unit_amount += self.unit_amount
         return True

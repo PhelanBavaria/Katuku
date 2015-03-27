@@ -1,10 +1,10 @@
 
 
 import random
-from common.actions import Action
+from common.events import Event
 
 
-class Attack(Action):
+class Attack(Event):
     subscribers = []
     def __init__(self, campaign, defender, attacker, unit_amount):
         self.campaign = campaign
@@ -36,12 +36,12 @@ class Attack(Action):
             self.attacker_dice = sa
             self.defender_dice = sd
             if sa <= sd:
-                Action.__call__(self)
+                #Event.__call__(self)
                 return True
         self.won = True
         self.defender.unit_amount = self.unit_amount
         self.defender.controller = self.attacker.controller
-        Action.__call__(self)
+        Event.__call__(self)
         return True
 
     def useable(self):

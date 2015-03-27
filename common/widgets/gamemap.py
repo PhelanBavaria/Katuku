@@ -4,15 +4,15 @@ import pygame
 from time import time
 from common.util import middle
 from common.widgets import Widget
-from common import actions
+from common import events
 from common.widgets.overlays import Political
 
 
 class GameMap(Widget):
     def __init__(self, map_path, game):
-        actions.AmassUnits.subscribers.append(self.on_place)
-        actions.ChangeOwner.subscribers.append(self.on_place)
-        actions.Attack.subscribers.append(self.on_attack)
+        events.AmassUnits.subscribers.append(self.on_place)
+        events.ChangeOwner.subscribers.append(self.on_place)
+        events.Attack.subscribers.append(self.on_attack)
         self.surface = pygame.image.load(map_path)
         Widget.__init__(self, self.surface.get_size())
         self.game = game
@@ -38,7 +38,7 @@ class GameMap(Widget):
     def on_click(self):
         pos = pygame.mouse.get_pos()
         color = tuple(self.surface.get_at(pos))
-        select_province = actions.SelectProvince(self.game.campaign, color)
+        select_province = events.SelectProvince(self.game.campaign, color)
         select_province()
 
     def on_hover(self):

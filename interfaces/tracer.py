@@ -1,16 +1,16 @@
 
 
 from interfaces import Base
-from common import actions
+from common import events
 
 
 class Tracer(Base):
     def __init__(self, game):
-        actions.SelectProvince.subscribers.append(self.on_select_province)
-        actions.AmassUnits.subscribers.append(self.on_amass_units)
-        actions.ChangeOwner.subscribers.append(self.on_change_owner)
-        actions.Attack.subscribers.append(self.on_attack)
-        actions.ReceiveUnits.subscribers.append(self.on_receive_units)
+        events.SelectProvince.subscribers.append(self.on_select_province)
+        events.AmassUnits.subscribers.append(self.on_amass_units)
+        events.ChangeOwner.subscribers.append(self.on_change_owner)
+        events.Attack.subscribers.append(self.on_attack)
+        events.ReceiveUnits.subscribers.append(self.on_receive_units)
 
     def on_select_province(self, action):
         print('Province', action.color, 'selected')

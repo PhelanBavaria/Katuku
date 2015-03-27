@@ -2,7 +2,7 @@
 
 import random
 from campaign.controllers import Player
-from common import actions
+from common import events
 
 
 class AI(Player):
@@ -25,13 +25,13 @@ class AI(Player):
         battle = random.choice(battles)
         province = battle[1]
         enemy_prov = battle[2]
-        return actions.Attack(self.campaign, enemy_prov, province,
+        return events.Attack(self.campaign, enemy_prov, province,
                               province.unit_amount-1)
 
     def place_unit(self):
         province = random.choice(self.country.provinces)
         province = self.campaign.provinces[province]
-        return actions.AmassUnits(self.campaign, province, self.country)
+        return self.campaign.events['amass_units'].trigger(province)
 
     def possible_battles(self):
         ps = self.campaign.provinces

@@ -2,7 +2,7 @@
 
 from interfaces import Base
 from interfaces import Tracer
-from common import actions
+from common import events
 
 
 class CommandLine(Base):
@@ -10,7 +10,7 @@ class CommandLine(Base):
 
     def __init__(self, game):
         Base.__init__(self, game)
-        self.actions = {
+        self.events = {
             '': self._pass,
             'exit': self.exit,
             'exec': self._exec,
@@ -27,9 +27,9 @@ class CommandLine(Base):
             else:
                 command = input('>>> ')
                 try:
-                    action = self.actions[command]
+                    action = self.events[command]
                 except KeyError:
-                    print('Action not supported')
+                    print('Event not supported')
                     break
                 if action():
                     break
@@ -59,4 +59,4 @@ class CommandLine(Base):
         elif len(rgb_color) != 4:
             print('Not a valid RGB color!')
             return
-        actions.SelectProvince(self.game.campaign, rgb_color)()
+        events.SelectProvince(self.game.campaign, rgb_color)()

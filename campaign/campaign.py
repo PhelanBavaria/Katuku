@@ -3,10 +3,14 @@
 import os
 import random
 from pygame import image
-from common import actions
 from campaign import Country
 from campaign import Province
 from campaign import controllers
+from campaign.events import ChangeOwner
+from campaign.events import ReceiveUnits
+from campaign.events import AmassUnits
+from campaign.events import Attack
+from campaign.events import SelectProvince
 
 
 class Campaign:
@@ -19,6 +23,13 @@ class Campaign:
                         in setup['players']]
         self.gamerules = setup['rules']
         self.provinces = {}
+        self.events = {
+            'change_owner': ChangeOwner(self),
+            'receive_units': ReceiveUnits(self),
+            'amass_units': AmassUnits(self),
+            'attack': Attack(self),
+            'select_province': SelectProvince(self)
+        }
 
     def create(self):
         self.load_map(self.setup['map'])
@@ -35,8 +46,8 @@ class Campaign:
                             provinces.remove(province)
                             print(province.color)
                             province = random.choice(provinces)
-                        actions.ChangeOwner(province, player.country)()
-                        actions.AmassUnits(self, province, player.country)()
+                        self.events['change_owner'].trigger(province, player.country)
+                        self.events['amass_units'].trigger(province)
                         provinces.remove(province)
                     if not provinces:
                         break
@@ -49,8 +60,8 @@ class Campaign:
                         while not province.occupiable():
                             provinces.remove(province)
                             province = random.choice(provinces)
-                        actions.ChangeOwner(province, player.country)()
-                        actions.AmassUnits(self, province, player.country)()
+                        self.events['change_owner'].trigger(province, player.country)
+                        self.events['amass_units'].trigger(province)
                         provinces.remove(province)
 
             for player in self.players:
@@ -66,8 +77,8 @@ class Campaign:
             for province in provinces:
                 if not province.conquerable():
                     continue
-                actions.ChangeOwner(province, independent.country)()
-                actions.AmassUnits(self, province, independent.country)()
+                self.events['change_owner'].trigger(province, independent.country)
+                self.events['amass_units'].trigger(province)
             provinces = []
             self.players.append(independent)
 
@@ -80,21 +91,20 @@ class Campaign:
             print('End Turn')
         elif self.players[self.current_player].ready:
             print('Player', self.players[self.current_player].name, 'ready')
-            actions.ReceiveUnits(self, self.players[self.current_player].country)()
+            country = self.players[self.current_player].country
+            self.events['receive_units'].trigger(country)
             if self.gamerules['auto_unit_placement']:
-                self.random_placement(self.players[self.current_player].country)
+                self.random_placement(country)
             self.current_player += 1
         else:
-            decision = self.players[self.current_player].make_decision()
-            if decision:
-                decision()
+            result = self.players[self.current_player].make_decision()
 
     def random_placement(self, country):
         provinces = country.provinces[:]
         while provinces and country.units_to_place:
             color = random.choice(provinces)
             province = self.provinces[color]
-            if not actions.AmassUnits(self, province, country)():
+            if not self.events['amass_units'].trigger(province):
                 provinces.remove(color)
 
     def load_map(self, name):

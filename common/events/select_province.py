@@ -1,9 +1,9 @@
 
 
-from common.actions import Action
+from common.events import Event
 
 
-class SelectProvince(Action):
+class SelectProvince(Event):
     subscribers = []
     def __init__(self, campaign, color):
         self.campaign = campaign

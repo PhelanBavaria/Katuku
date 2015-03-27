@@ -1,9 +1,9 @@
 
 
-from common.actions import Action
+from common.events import Event
 
 
-class PlaceUnit(Action):
+class PlaceUnit(Event):
     subscribers = []
     def __init__(self, campaign, province, player, unit_amount=1):
         self.campaign = campaign
@@ -16,7 +16,7 @@ class PlaceUnit(Action):
             return
         max_units = self.campaign.gamerules['max_units_province']
         self.unit_amount = min(self.unit_amount, max_units-self.province.unit_amount)
-        Action.__call__(self)
+        #Event.__call__(self)
         self.player.units_to_place -= self.unit_amount
         if self.province.controller != self.player:
             self.province.controller = self.player

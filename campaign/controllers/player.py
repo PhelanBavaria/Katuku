@@ -1,6 +1,5 @@
 
 
-from common import actions
 
 
 class Player:
@@ -9,7 +8,7 @@ class Player:
         self.campaign = campaign
         self.country = country
         self.ready = False
-        actions.SelectProvince.subscribers.append(self.on_province_selection)
+        campaign.events['select_province'].on_trigger(self.on_province_selection)
 
     def make_decision(self):
         if not self.country:

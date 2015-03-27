@@ -1,9 +1,9 @@
 
 
-from common.actions import Action
+from common.events import Event
 
 
-class ChangeOwner(Action):
+class ChangeOwner(Event):
     subscribers = []
     def __init__(self, province, country):
         self.province = province
@@ -12,7 +12,7 @@ class ChangeOwner(Action):
     def __call__(self):
         if not self.useable():
             return False
-        Action.__call__(self)
+        #Event.__call__(self)
         self.province.controller = self.country
         return True
 
