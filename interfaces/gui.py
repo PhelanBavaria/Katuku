@@ -18,29 +18,37 @@ class GUI(Base):
             pygame.QUIT: self.exit,
             pygame.MOUSEBUTTONDOWN: self.select_widget,
             pygame.MOUSEMOTION: self.hover_widget,
-            pygame.K_ESCAPE: self.exit,
-            pygame.K_RETURN: self.end_turn
+            pygame.KEYDOWN: self.key_down,
+            pygame.KEYUP: self.key_up
         }
+        self.on_key_down = {}
+        self.on_key_up = {}
         pygame.display.flip()
 
     def update(self):
         for event in pygame.event.get():
             try:
-                interaction = self.interactions[event.type]
+                self.interactions[event.type](event)
+            except TypeError:
+                self.interactions[event.type]()
             except KeyError:
-                try:
-                    interaction = self.interactions[event.key]
-                except KeyError:
-                    continue
-                except AttributeError:
-                    continue
-            except AttributeError:
                 continue
-            interaction()
 
         for widget in self.widgets.values():
             widget.draw(self.screen)
         pygame.display.flip()
+
+    def key_down(self, event):
+        try:
+            self.on_key_down[event.key]()
+        except KeyError:
+            return
+
+    def key_up(self, event):
+        try:
+            self.on_key_up[event.key]()
+        except KeyError:
+            return
 
     def exit(self):
         self.game.run = False
@@ -68,3 +76,7 @@ class GUI(Base):
     def show_campaign(self):
         self.widgets.clear()
         self.widgets['campaignmap'] = CampaignMap(self.game.campaign)
+        self.on_key_down = {
+            pygame.K_ESCAPE: self.exit,
+            pygame.K_RETURN: self.end_turn
+        }
