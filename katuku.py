@@ -31,6 +31,7 @@ game.campaign.create()
 # game.local_interface = Tracer(game)
 # game.local_interface = CommandLine(game)
 game.local_interface = GUI(game)
+game.local_interface.show_campaign()
 # gui.pages['page_campaign'] = PageCampaign(gui)
 # game.local_interface = gui
 

@@ -1,6 +1,5 @@
 
 
-import os
 import pygame
 import pygame.freetype
 from interfaces import Base
@@ -13,11 +12,7 @@ class GUI(Base):
         Base.__init__(self, game)
         self.screen = pygame.display.set_mode((800, 800))
         pygame.display.set_caption('Katuku')
-        map_path = os.path.join('campaign', 'maps', game.campaign.map_name + '.bmp')
-        self.widgets = {
-            'campaignmap': CampaignMap(map_path, game.campaign)
-        }
-        self.displayed = []
+        self.widgets = {}
         self.selected_widget = None
         self.interactions = {
             pygame.QUIT: self.exit,
@@ -70,10 +65,6 @@ class GUI(Base):
                 widget.on_hover()
                 break
 
-    def draw_game(self):
-        self.screen.blit(self.game.prov_map, (0, 0))
-        if self.game.selected_prov:
-            color = (255, 255, 255)
-            province = self.game.provinces[self.game.selected_prov]
-            for x, y in province.border:
-                self.screen.fill(color, pygame.Rect(x, y, 1, 1))
+    def show_campaign(self):
+        self.widgets.clear()
+        self.widgets['campaignmap'] = CampaignMap(self.game.campaign)

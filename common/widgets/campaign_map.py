@@ -1,15 +1,14 @@
 
 
+import os
 import pygame
-from time import time
-from common.util import middle
 from common.widgets import Widget
-from common import events
 from common.widgets.overlays import Political
 
 
 class CampaignMap(Widget):
-    def __init__(self, map_path, campaign):
+    def __init__(self, campaign):
+        map_path = os.path.join('campaign', 'maps', campaign.map_name + '.bmp')
         campaign.events['change_owner'].on_trigger(self.on_place)
         campaign.events['amass_units'].on_trigger(self.on_place)
         campaign.events['attack'].on_trigger(self.on_attack)
@@ -46,7 +45,6 @@ class CampaignMap(Widget):
         units = self.campaign.provinces[color].unit_amount
         font = pygame.freetype.Font('gfx/fonts/CelticHand.ttf', 50)
         text, rect = font.render(str(units), size=15)
-        area = self.province_areas[color]
         rect.move_ip(*pos)
         rect = rect.move(20, -15)
         self.hovering_over = text, rect
