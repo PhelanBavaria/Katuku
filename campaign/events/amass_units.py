@@ -1,5 +1,6 @@
 
 
+import logging
 from common.events import Event
 
 
@@ -13,6 +14,7 @@ class AmassUnits(Event):
             'province_id': province_id
         }
         self.handlers.append((handler, filters))
+        logging.info('Handler ' + str(handler) + 'was added to AmassUnits')
 
     def trigger(self, province, unit_amount=1):
         max_units = self.campaign.gamerules['max_units_province']
@@ -29,4 +31,5 @@ class AmassUnits(Event):
             if is_id:
                 handler(province)
 
+        logging.info('triggered AmassUnits')
         return True

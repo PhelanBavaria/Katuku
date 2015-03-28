@@ -2,6 +2,7 @@
 
 import os
 import random
+import logging
 from pygame import image
 from campaign import Country
 from campaign import Province
@@ -69,7 +70,7 @@ class Campaign:
                 player.country.units_to_place += units
                 self.random_placement(player.country)
         else:
-            print('Not implemented yet that province are selected manually')
+            logging.warning('Not implemented yet that province are selected manually')
 
         if self.gamerules['fill_remaining_provinces']:
             independent = controllers.Independent(self)
@@ -93,7 +94,7 @@ class Campaign:
         elif not current_player.attacking_done:
             current_player.attack()
         else:
-            print('Player', current_player.name, 'ready')
+            logging.info('Player ' + current_player.name + ' ready')
             country = current_player.country
             self.events['receive_units'].trigger(country)
             if self.gamerules['auto_unit_placement']:
@@ -104,7 +105,7 @@ class Campaign:
             for player in self.players:
                 player.placement_done = False
                 player.attacking_done = False
-            print('End Turn')
+            logging.info('End Turn')
 
     def random_placement(self, country):
         provinces = country.provinces[:]
@@ -116,7 +117,7 @@ class Campaign:
 
     def load_map(self, name):
         file_name = name + '.bmp'
-        print('Loading map:', file_name)
+        logging.info('Loading map: ' + file_name)
         self.map_name = name
         surface = image.load(os.path.join('campaign', 'maps', file_name))
         width, height = surface.get_width(), surface.get_height()

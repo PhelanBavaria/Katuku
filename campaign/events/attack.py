@@ -1,6 +1,7 @@
 
 
 import random
+import logging
 from common.events import Event
 
 
@@ -17,6 +18,7 @@ class Attack(Event):
             'winner': winner
         }
         self.handlers.append((handler, filters))
+        logging.info('Handler ' + str(handler) + 'was added to Attack')
 
     def trigger(self, attacker, defender, unit_amount):
         if not defender.conquerable() or attacker.unit_amount <= 1:
@@ -48,4 +50,5 @@ class Attack(Event):
             same_winner = filters['winner'] in (winner, None)
             if is_attacker and is_defender and same_winner:
                 handler(attacker, defender, unit_amount, winner)
+        logging.info('triggered Attack')
         return True

@@ -1,5 +1,6 @@
 
 
+import logging
 from common.events import Event
 
 
@@ -14,6 +15,7 @@ class ChangeOwner(Event):
             'country': country
         }
         self.handlers.append((handler, filters))
+        logging.info('Handler ' + str(handler) + 'was added to ChangeOwner')
 
     def trigger(self, province, country):
         if province.controller == country:
@@ -27,4 +29,5 @@ class ChangeOwner(Event):
             if is_province and is_country:
                 handler(province)
 
+        logging.info('triggered ChangeOwner')
         return True

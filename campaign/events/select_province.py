@@ -1,5 +1,6 @@
 
 
+import logging
 from common.events import Event
 
 
@@ -13,6 +14,7 @@ class SelectProvince(Event):
             'color': color
         }
         self.handlers.append((handler, filters))
+        logging.info('Handler ' + str(handler) + 'was added to SelectProvince')
 
     def trigger(self, color):
         for handler, filters in self.handlers:
@@ -20,4 +22,5 @@ class SelectProvince(Event):
             if is_color:
                 handler(color)
 
+        logging.info('triggered SelectProvince')
         return True

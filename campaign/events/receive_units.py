@@ -1,5 +1,6 @@
 
 
+import logging
 from common.events import Event
 
 
@@ -13,6 +14,7 @@ class ReceiveUnits(Event):
             'country': country
         }
         self.handlers.append((handler, filters))
+        logging.info('Handler ' + str(handler) + 'was added to ReceiveUnits')
 
     def trigger(self, country):
         province_units = self.campaign.gamerules['new_units_per_turn']
@@ -27,4 +29,5 @@ class ReceiveUnits(Event):
             if is_country:
                 handler()
 
+        logging.info('triggered ReceiveUnits')
         return True

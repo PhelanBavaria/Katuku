@@ -1,6 +1,7 @@
 
 
 import random
+import logging
 import yaml
 import pygame
 from common import Game
@@ -11,6 +12,7 @@ from interfaces import GUI
 
 random.seed(222)
 pygame.init()
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 game = Game()
 
@@ -41,8 +43,8 @@ while game.run:
     remaining = [player for player in game.campaign.players
                  if len(player.country.provinces)]
     if len(remaining) == 1:
-        print('Player', remaining[0].name, 'has won!')
-        print('Occupied provinces:', len(remaining[0].provinces))
+        logging.info('Player ' + remaining[0].name + ' has won!')
+        logging.info('Occupied provinces: ' + str(len(remaining[0].provinces)))
         if input('Type anything to end'):
             break
     elif game.campaign and not game.campaign.paused:
