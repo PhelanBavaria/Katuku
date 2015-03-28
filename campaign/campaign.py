@@ -87,19 +87,23 @@ class Campaign:
 
 
     def update(self):
-        if self.players[self.current_player].ready:
-            print('Player', self.players[self.current_player].name, 'ready')
-            country = self.players[self.current_player].country
+        current_player = self.players[self.current_player]
+        if not current_player.placement_done:
+            current_player.place_unit()
+        elif not current_player.attacking_done:
+            current_player.attack()
+        else:
+            print('Player', current_player.name, 'ready')
+            country = current_player.country
             self.events['receive_units'].trigger(country)
             if self.gamerules['auto_unit_placement']:
                 self.random_placement(country)
             self.current_player += 1
-        else:
-            result = self.players[self.current_player].make_decision()
         if self.current_player == len(self.players):
             self.current_player = 0
             for player in self.players:
-                player.ready = False
+                player.placement_done = False
+                player.attacking_done = False
             print('End Turn')
 
     def random_placement(self, country):

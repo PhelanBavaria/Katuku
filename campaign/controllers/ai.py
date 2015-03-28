@@ -8,29 +8,28 @@ class AI(Player):
     def on_province_selection(self, color):
         pass
 
-    def make_decision(self):
-        if not self.country:
-            return
-        elif self.country.units_to_place:
-            return self.place_unit()
+    def place_unit(self):
+        if not self.country or self.country.units_to_place <= 0 or \
+           self.unfull_provinces():
+            self.placement_done = True
         else:
-            return self.attack()
+            province = random.choice(self.country.provinces)
+            province = self.campaign.provinces[province]
+            return self.campaign.events['amass_units'].trigger(province)
 
     def attack(self):
-        battles = self.possible_battles()
-        if not battles:
-            self.ready = True
-            return
-        battle = random.choice(battles)
-        province = battle[1]
-        enemy_prov = battle[2]
-        return self.campaign.events['attack'].trigger(province, enemy_prov,
-                              province.unit_amount-1)
-
-    def place_unit(self):
-        province = random.choice(self.country.provinces)
-        province = self.campaign.provinces[province]
-        return self.campaign.events['amass_units'].trigger(province)
+        if not self.country:
+            self.attacking_done = True
+        else:
+            battles = self.possible_battles()
+            if not battles:
+                self.attacking_done = True
+                return
+            battle = random.choice(battles)
+            province = battle[1]
+            enemy_prov = battle[2]
+            return self.campaign.events['attack'].trigger(province, enemy_prov,
+                                  province.unit_amount-1)
 
     def possible_battles(self):
         ps = self.campaign.provinces

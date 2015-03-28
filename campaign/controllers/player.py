@@ -7,19 +7,9 @@ class Player:
         self.name = name
         self.campaign = campaign
         self.country = country
-        self.ready = False
+        self.placement_done = False
+        self.attacking_done = False
         campaign.events['select_province'].on_trigger(self.on_province_selection)
-
-    def make_decision(self):
-        if not self.country:
-            return
-
-        if not self.country.origin_province:
-            self.country.goal_province = None
-        elif self.country.units_to_place > 0:
-            return self.place_unit()
-        elif self.country.goal_province:
-            return self.attack()
 
     def attack(self):
         pass
@@ -35,3 +25,9 @@ class Player:
             for neighbour in province.neighbours:
                 if neighbour not in self.provinces:
                     yield neighbour
+
+    def unfull_provinces(self):
+        for color in self.country.provinces:
+            province = self.campaign.provinces[color]
+            if province.unit_amount >= self.campaign.gamerules['max_units_province']:
+                yield province

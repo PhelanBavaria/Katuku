@@ -11,5 +11,5 @@ class Independent(AI):
         self.country.sec_color = (150, 150, 150, 255)
 
     def attack(self):
-        self.ready = True
+        self.attacking_done = True
         return

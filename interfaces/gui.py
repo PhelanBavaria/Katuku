@@ -56,7 +56,10 @@ class GUI(Base):
     def end_turn(self):
         player = self.game.campaign.players[self.game.campaign.current_player]
         if type(player) == LocalPlayer:
-            player.ready = True
+            if not player.placement_done:
+                player.placement_done = True
+            elif not player.attacking_done:
+                player.attacking_done = True
 
     def select_widget(self):
         x, y = pygame.mouse.get_pos()
