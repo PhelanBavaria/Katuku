@@ -1,7 +1,6 @@
 
 
 from campaign.controllers import Player
-from common import events
 
 
 class LocalPlayer(Player):
@@ -15,8 +14,8 @@ class LocalPlayer(Player):
         province = self.country.origin_province
         return self.campaign.events['amass_units'].trigger(province)
 
-    def on_province_selection(self, action):
-        province = self.campaign.provinces[action.color]
+    def on_province_selection(self, color):
+        province = self.campaign.provinces[color]
         if province.controller == self.country:
             self.country.origin_province = province
         elif province == self.country.origin_province:

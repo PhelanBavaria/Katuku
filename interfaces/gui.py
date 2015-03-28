@@ -5,7 +5,7 @@ import pygame
 import pygame.freetype
 from interfaces import Base
 from campaign.controllers import LocalPlayer
-from common.widgets import GameMap
+from common.widgets import CampaignMap
 
 
 class GUI(Base):
@@ -15,7 +15,7 @@ class GUI(Base):
         pygame.display.set_caption('Katuku')
         map_path = os.path.join('campaign', 'maps', game.campaign.map_name + '.bmp')
         self.widgets = {
-            'campaignmap': GameMap(map_path, game)
+            'campaignmap': CampaignMap(map_path, game.campaign)
         }
         self.displayed = []
         self.selected_widget = None

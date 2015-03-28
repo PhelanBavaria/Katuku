@@ -8,14 +8,14 @@ from common import events
 from common.widgets.overlays import Political
 
 
-class GameMap(Widget):
-    def __init__(self, map_path, game):
-        events.AmassUnits.subscribers.append(self.on_place)
-        events.ChangeOwner.subscribers.append(self.on_place)
-        events.Attack.subscribers.append(self.on_attack)
+class CampaignMap(Widget):
+    def __init__(self, map_path, campaign):
+        campaign.events['change_owner'].on_trigger(self.on_place)
+        campaign.events['amass_units'].on_trigger(self.on_place)
+        campaign.events['attack'].on_trigger(self.on_attack)
         self.surface = pygame.image.load(map_path)
         Widget.__init__(self, self.surface.get_size())
-        self.game = game
+        self.campaign = campaign
         self.map_pos = (0, 0)
         self.zoom = 1
         self.province_areas = {}
@@ -32,19 +32,18 @@ class GameMap(Widget):
                     self.province_areas[color] = []
                 self.province_areas[color].append((x, y))
         for color, area in self.province_areas.items():
-            province = self.game.campaign.provinces[color]
+            province = self.campaign.provinces[color]
             self.views['political'].update(province, area)
 
     def on_click(self):
         pos = pygame.mouse.get_pos()
         color = tuple(self.surface.get_at(pos))
-        select_province = events.SelectProvince(self.game.campaign, color)
-        select_province()
+        self.campaign.events['select_province'].trigger(color)
 
     def on_hover(self):
         pos = pygame.mouse.get_pos()
         color = tuple(self.surface.get_at(pos))
-        units = self.game.campaign.provinces[color].unit_amount
+        units = self.campaign.provinces[color].unit_amount
         font = pygame.freetype.Font('gfx/fonts/CelticHand.ttf', 50)
         text, rect = font.render(str(units), size=15)
         area = self.province_areas[color]
@@ -52,34 +51,30 @@ class GameMap(Widget):
         rect = rect.move(20, -15)
         self.hovering_over = text, rect
 
-    def on_place(self, action):
-        print('Player', action.country.name, 'placed', action.unit_amount,
-              'units on', action.province.color, action.country.units_to_place, 'left')
-        area = self.province_areas[action.province.color]
-        self.views['political'].update(action.province, area)
+    def on_place(self, province):
+        # print('Player', action.country.name, 'placed', action.unit_amount,
+        #       'units on', action.province.color, action.country.units_to_place, 'left')
+        area = self.province_areas[province.color]
+        self.views['political'].update(province, area)
 
-    def on_attack(self, action):
-        attacker = action.attacker.controller.name
-        try:
-            defender = action.defender.controller.name
-        except AttributeError:
-            defender = None
-        if action.won:
-            result = 'won'
-        else:
-            result = 'lost'
-        print('Player', attacker,
-              'attacked', action.defender_unit_amount, 'units on',
-              action.defender.color, '(' + str(defender) + ')',
-              'from', action.attacker.color,
-              'with', action.unit_amount, 'out of',
-              action.attacker.unit_amount+action.unit_amount, 'units',
-              'and', result,
-              '(', action.defender_dice, 'vs.', action.attacker_dice, ')')
-        aarea = self.province_areas[action.attacker.color]
-        darea = self.province_areas[action.defender.color]
-        self.views['political'].update(action.attacker, aarea)
-        self.views['political'].update(action.defender, darea)
+    def on_attack(self, attacker, defender, unit_amount, winner):
+        # att_name = attacker.controller.name
+        # try:
+        #     def_name = defender.controller.name
+        # except AttributeError:
+        #     def_name = None
+        # print('Player', att_name,
+        #       'attacked', defender.unit_amount, 'units on',
+        #       defender.color, '(' + str(def_name) + ')',
+        #       'from', attacker.color,
+        #       'with', unit_amount, 'out of',
+        #       attacker.unit_amount+unit_amount, 'units',
+        #       'and', winner,
+        #       '(', defender_dice, 'vs.', attacker_dice, ')')
+        aarea = self.province_areas[attacker.color]
+        darea = self.province_areas[defender.color]
+        self.views['political'].update(attacker, aarea)
+        self.views['political'].update(defender, darea)
 
     def draw(self, surface):
         surface.blit(self.views[self.view].surface, (0, 0))
@@ -99,13 +94,13 @@ class GameMap(Widget):
         return overlay
 
     def origin_overlay(self, province_id):
-        province = self.game.campaign.provinces[province_id]
+        province = self.campaign.provinces[province_id]
         color = (255, 255, 255, 125)
         for x, y in province.border:
             self.surface.fill(color, pygame.Rect(x, y, 1, 1))
 
     def goal_overlay(self, province_id):
-        province = self.game.campaign.provinces[province_id]
+        province = self.campaign.provinces[province_id]
         color = (0, 0, 0, 125)
         for x, y in province.border:
             self.surface.fill(color, pygame.Rect(x, y, 1, 1))

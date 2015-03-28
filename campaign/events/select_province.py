@@ -12,12 +12,12 @@ class SelectProvince(Event):
         filters = {
             'color': color
         }
-        self.handlers.add((handler, filters))
+        self.handlers.append((handler, filters))
 
     def trigger(self, color):
         for handler, filters in self.handlers:
             is_color = filters['color'] in (color, None)
             if is_color:
-                handler()
+                handler(color)
 
         return True

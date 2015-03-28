@@ -13,7 +13,7 @@ class ChangeOwner(Event):
             'province': province,
             'country': country
         }
-        self.handlers.add((handler, filters))
+        self.handlers.append((handler, filters))
 
     def trigger(self, province, country):
         if province.controller == country:
@@ -25,6 +25,6 @@ class ChangeOwner(Event):
             is_province = filters['province'] in (province, None)
             is_country = filters['country'] in (country, None)
             if is_province and is_country:
-                handler()
+                handler(province)
 
         return True

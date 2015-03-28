@@ -2,11 +2,10 @@
 
 import random
 from campaign.controllers import Player
-from common import events
 
 
 class AI(Player):
-    def on_province_selection(self, action):
+    def on_province_selection(self, color):
         pass
 
     def make_decision(self):
@@ -25,7 +24,7 @@ class AI(Player):
         battle = random.choice(battles)
         province = battle[1]
         enemy_prov = battle[2]
-        return events.Attack(self.campaign, enemy_prov, province,
+        return self.campaign.events['attack'].trigger(province, enemy_prov,
                               province.unit_amount-1)
 
     def place_unit(self):

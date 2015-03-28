@@ -12,7 +12,7 @@ class ReceiveUnits(Event):
         filters = {
             'country': country
         }
-        self.handlers.add((handler, filters))
+        self.handlers.append((handler, filters))
 
     def trigger(self, country):
         province_units = self.campaign.gamerules['new_units_per_turn']

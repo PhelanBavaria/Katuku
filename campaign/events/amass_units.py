@@ -12,12 +12,12 @@ class AmassUnits(Event):
         filters = {
             'province_id': province_id
         }
-        self.handlers.add((handler, filters))
+        self.handlers.append((handler, filters))
 
     def trigger(self, province, unit_amount=1):
         max_units = self.campaign.gamerules['max_units_province']
         unit_cap = province.unit_amount >= max_units
-        if unit_cap:
+        if unit_cap or province.controller.units_to_place <= 0:
             return False
 
         unit_amount = min(unit_amount, max_units - province.unit_amount)
@@ -27,6 +27,6 @@ class AmassUnits(Event):
         for handler, filters in self.handlers:
             is_id = filters['province_id'] in (province.color, None)
             if is_id:
-                handler()
+                handler(province)
 
         return True

@@ -19,10 +19,6 @@ class Campaign:
         self.paused = False
         self.current_player = 0
         self.map_name = ''
-        self.players = [controllers.types[p](n, self, Country(c)) for p, n, c
-                        in setup['players']]
-        self.gamerules = setup['rules']
-        self.provinces = {}
         self.events = {
             'change_owner': ChangeOwner(self),
             'receive_units': ReceiveUnits(self),
@@ -30,6 +26,10 @@ class Campaign:
             'attack': Attack(self),
             'select_province': SelectProvince(self)
         }
+        self.players = [controllers.types[p](n, self, Country(c)) for p, n, c
+                        in setup['players']]
+        self.gamerules = setup['rules']
+        self.provinces = {}
 
     def create(self):
         self.load_map(self.setup['map'])
@@ -44,7 +44,6 @@ class Campaign:
                         province = random.choice(provinces)
                         while not province.occupiable():
                             provinces.remove(province)
-                            print(province.color)
                             province = random.choice(provinces)
                         self.events['change_owner'].trigger(province, player.country)
                         self.events['amass_units'].trigger(province)
@@ -80,16 +79,15 @@ class Campaign:
                 self.events['change_owner'].trigger(province, independent.country)
                 self.events['amass_units'].trigger(province)
             provinces = []
+            units = self.gamerules['start_units'] * \
+                    len(independent.country.provinces)
+            independent.country.units_to_place += units
+            self.random_placement(independent.country)
             self.players.append(independent)
 
 
     def update(self):
-        if self.current_player == len(self.players):
-            self.current_player = 0
-            for player in self.players:
-                player.ready = False
-            print('End Turn')
-        elif self.players[self.current_player].ready:
+        if self.players[self.current_player].ready:
             print('Player', self.players[self.current_player].name, 'ready')
             country = self.players[self.current_player].country
             self.events['receive_units'].trigger(country)
@@ -98,6 +96,11 @@ class Campaign:
             self.current_player += 1
         else:
             result = self.players[self.current_player].make_decision()
+        if self.current_player == len(self.players):
+            self.current_player = 0
+            for player in self.players:
+                player.ready = False
+            print('End Turn')
 
     def random_placement(self, country):
         provinces = country.provinces[:]

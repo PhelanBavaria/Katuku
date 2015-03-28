@@ -27,7 +27,7 @@ class Player:
     def place_unit(self):
         pass
 
-    def on_province_selection(self, action):
+    def on_province_selection(self, color):
         pass
 
     def bordering_provinces(self):
