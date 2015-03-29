@@ -28,10 +28,12 @@ class AI(Player):
             battle = random.choice(battles)
             province = battle[1]
             enemy_prov = battle[2]
+            min_units_province = self.campaign.gamerules['min_units_province']
             return self.campaign.events['attack'].trigger(province, enemy_prov,
-                                  province.unit_amount-1)
+                                  province.unit_amount-min_units_province)
 
     def possible_battles(self):
+        min_units_province = self.campaign.gamerules['min_units_province']
         ps = self.campaign.provinces
         battles = []
         for p in self.country.provinces:
@@ -44,7 +46,7 @@ class AI(Player):
                     continue
                 elif ps[n].water:
                     continue
-                ap = ps[p].unit_amount-1
+                ap = ps[p].unit_amount-min_units_province
                 dp = ps[n].unit_amount
                 sr = ap - dp
                 battles.append((sr, ps[p], ps[n]))

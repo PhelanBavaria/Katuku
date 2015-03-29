@@ -21,10 +21,11 @@ class Attack(Event):
         logging.info('Handler ' + str(handler) + 'was added to Attack')
 
     def trigger(self, attacker, defender, unit_amount):
-        if not defender.conquerable() or attacker.unit_amount <= 1:
+        min_units_province = self.campaign.gamerules['min_units_province']
+        if not defender.conquerable() or attacker.unit_amount <= min_units_province:
             return False
 
-        unit_amount = min(unit_amount, attacker.unit_amount-1)
+        unit_amount = min(unit_amount, attacker.unit_amount-min_units_province)
         winner = ''
         if defender.unit_amount:
             gamerules = self.campaign.gamerules
