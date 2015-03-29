@@ -31,6 +31,6 @@ class LocalPlayer(Player):
         elif province == self.country.origin_province:
             self.country.origin_province = None
         elif self.country.origin_province and \
-             province.color in self.country.origin_province.neighbours and \
+             color in self.country.origin_province.neighbours and \
              self.placement_done:
             self.country.goal_province = province

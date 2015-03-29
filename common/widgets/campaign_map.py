@@ -8,7 +8,7 @@ from common.widgets.overlays import Political
 
 class CampaignMap(Widget):
     def __init__(self, campaign):
-        map_path = os.path.join('campaign', 'maps', campaign.map_name + '.bmp')
+        map_path = os.path.join('campaign', 'maps', campaign.map_name, 'provinces.bmp')
         campaign.events['change_owner'].on_trigger(self.on_place)
         campaign.events['amass_units'].on_trigger(self.on_place)
         campaign.events['attack'].on_trigger(self.on_attack)

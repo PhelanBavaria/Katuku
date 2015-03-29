@@ -21,7 +21,7 @@ players = [
     ('local', 'test_p1', '__BAVARIA__'),
     ('ai', 'test_p2', '__TESTIA__')
 ]
-rules = yaml.load(open('campaign/gamerules/capital_expansion.yml').read())
+rules = yaml.load(open('campaign/gamerules/dicewars.yml').read())
 setup = {
     'map': 'Europe',
     'rules': rules,
@@ -37,7 +37,7 @@ game.local_interface.show_campaign()
 # gui.pages['page_campaign'] = PageCampaign(gui)
 # game.local_interface = gui
 
-
+logging.debug('Checksum: ' + str(random.randint(0, 1000)))
 while game.run:
     game.update()
     remaining = [player for player in game.campaign.players

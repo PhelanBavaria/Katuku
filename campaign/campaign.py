@@ -1,8 +1,10 @@
 
 
 import os
+import struct
 import random
 import logging
+import yaml
 from pygame import image
 from campaign import Country
 from campaign import Province
@@ -116,10 +118,9 @@ class Campaign:
                 provinces.remove(color)
 
     def load_map(self, name):
-        file_name = name + '.bmp'
-        logging.info('Loading map: ' + file_name)
+        logging.info('Loading map: ' + name)
         self.map_name = name
-        surface = image.load(os.path.join('campaign', 'maps', file_name))
+        surface = image.load(os.path.join('campaign', 'maps', name, 'provinces.bmp'))
         width, height = surface.get_width(), surface.get_height()
         # Scanning the map from left to right, top to bottom first
         for y in range(height):
@@ -146,5 +147,13 @@ class Campaign:
                     self.provinces[color].neighbours.add(last_color)
                     self.provinces[last_color].neighbours.add(color)
                     last_color = color
-
         # Note: Scanning twice to get directly adjacent pixels
+
+        c_path = 'campaign/maps/' + name + '/connections.yml'
+        connections = yaml.load(open(c_path).read())
+        for key, value in connections.items():
+            key = str(key)
+            key_color = struct.unpack('BBB', bytes.fromhex(key)) + (255,)
+            for v in value.split():
+                value_color = struct.unpack('BBB', bytes.fromhex(v)) + (255,)
+                self.provinces[key_color].neighbours.add(value_color)
