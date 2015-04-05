@@ -4,6 +4,11 @@ import pygame
 import pygame.freetype
 from interfaces import Base
 from campaign.controllers import LocalPlayer
+from common.widgets import Button
+from common.widgets import Label
+from common.widgets import Image
+from common.widgets import Toggler
+from common.widgets import Selection
 from common.widgets import CampaignMap
 
 
@@ -12,7 +17,7 @@ class GUI(Base):
         Base.__init__(self, game)
         self.screen = pygame.display.set_mode((800, 800))
         pygame.display.set_caption('Katuku')
-        self.widgets = {}
+        self.widgets = []
         self.selected_widget = None
         self.interactions = {
             pygame.QUIT: self.exit,
@@ -34,7 +39,7 @@ class GUI(Base):
             except KeyError:
                 continue
 
-        for widget in self.widgets.values():
+        for widget in self.widgets:
             widget.draw(self.screen)
         pygame.display.flip()
 
@@ -63,22 +68,34 @@ class GUI(Base):
 
     def select_widget(self):
         x, y = pygame.mouse.get_pos()
-        for widget in self.widgets.values():
-            if widget.get_rect().collidepoint(x, y):
+        for widget in self.widgets:
+            if widget.in_bounds((x, y)):
                 widget.on_click()
                 self.selected_widget = widget
                 break
 
     def hover_widget(self):
         x, y = pygame.mouse.get_pos()
-        for widget in self.widgets.values():
-            if widget.get_rect().collidepoint(x, y):
+        for widget in self.widgets:
+            if widget.in_bounds((x, y)):
                 widget.on_hover()
                 break
 
+    def show_campaign_setup(self):
+        def say_hi():
+            print('hi')
+        button = Button(say_hi)
+        label = Label('hi')
+        label.y = 50
+        image = Image(pygame.image.load('campaign/maps/Europe/provinces.bmp'))
+        image.y = 100
+        image.resize(100, 100)
+        self.widgets.append(button)
+        self.widgets.append(label)
+        self.widgets.append(image)
+
     def show_campaign(self):
-        self.widgets.clear()
-        self.widgets['campaignmap'] = CampaignMap(self.game.campaign)
+        self.widgets.append(CampaignMap(self.game.campaign))
         self.on_key_down = {
             pygame.K_ESCAPE: self.exit,
             pygame.K_RETURN: self.end_turn

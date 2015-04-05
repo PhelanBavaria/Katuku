@@ -29,13 +29,11 @@ setup = {
 }
 game.campaign = Campaign(setup)
 game.campaign.create()
-#game.campaign.select_provinc'#00ff00')
 # game.local_interface = Tracer(game)
 # game.local_interface = CommandLine(game)
 game.local_interface = GUI(game)
 game.local_interface.show_campaign()
-# gui.pages['page_campaign'] = PageCampaign(gui)
-# game.local_interface = gui
+#game.local_interface.show_campaign()
 
 logging.debug('Checksum: ' + str(random.randint(0, 1000)))
 while game.run:

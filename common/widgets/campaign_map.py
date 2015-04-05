@@ -13,7 +13,8 @@ class CampaignMap(Widget):
         campaign.events['amass_units'].on_trigger(self.on_place)
         campaign.events['attack'].on_trigger(self.on_attack)
         self.surface = pygame.image.load(map_path)
-        Widget.__init__(self, self.surface.get_size())
+        Widget.__init__(self)
+        self.x, self.y = self.surface.get_size()
         self.campaign = campaign
         self.map_pos = (0, 0)
         self.zoom = 1
@@ -35,6 +36,7 @@ class CampaignMap(Widget):
             self.views['political'].update(province, area)
 
     def on_click(self):
+        print('clicked')
         pos = pygame.mouse.get_pos()
         color = tuple(self.surface.get_at(pos))
         self.campaign.events['select_province'].trigger(color)
@@ -43,8 +45,7 @@ class CampaignMap(Widget):
         pos = pygame.mouse.get_pos()
         color = tuple(self.surface.get_at(pos))
         units = self.campaign.provinces[color].unit_amount
-        font = pygame.freetype.Font('gfx/fonts/CelticHand.ttf', 50)
-        text, rect = font.render(str(units), size=15)
+        text, rect = self.font.render(str(units), size=15)
         rect.move_ip(*pos)
         rect = rect.move(20, -15)
         self.hovering_over = text, rect
