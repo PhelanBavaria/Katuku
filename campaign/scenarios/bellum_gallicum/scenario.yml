@@ -1,0 +1,12 @@
+setup:
+  map: Europe
+  players:
+  - !!python/tuple
+    - local
+    - Arverni
+    - Arverni
+  - !!python/tuple
+    - ai
+    - Rome
+    - Rome
+create: !!python/name:campaign.scenarios.bellum_gallicum.setup.setup ''
